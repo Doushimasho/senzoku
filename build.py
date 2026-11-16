@@ -4,9 +4,15 @@ import os, sys, html
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else "site"
 NAME = "竹村正太"
-FORMS = {                   # GoogleフォームやTimeRexのURLが決まったら差し替える
-    "setsumei": "#junbi", "shiryo": "teian.html", "kyujin": "#junbi",
-    "kit": "teian.html", "suisen": "#junbi",
+SITE = "https://doushimasho.github.io/senzoku/"
+# Googleフォームの公開URL（docs.google.com/forms/.../viewform）を入れる。空のままなら「準備中」の欄に飛ぶ
+FORM_MOSHIKOMI = ""   # フォーム1：導入のお申込み
+FORM_SHIRYO = ""      # フォーム2：資料の受け取り・30分説明のご希望
+FORM_SUISEN = ""      # フォーム3：会社に導入してほしい方へ
+FORMS = {
+    "setsumei": FORM_SHIRYO or "#junbi", "kyujin": FORM_SHIRYO or "#junbi",
+    "suisen": FORM_SUISEN or "#junbi", "moshikomi": FORM_MOSHIKOMI or "#junbi",
+    "shiryo": "teian.html", "kit": "teian.html",
 }
 
 def person(cx, cy, shirt, hair, skin="#ffd9b8"):
@@ -143,6 +149,7 @@ footer{padding:28px 0 48px;color:var(--muted);font-size:14px;border-top:1px soli
 .pn{font-family:var(--display);font-size:24px;font-weight:700;margin:0 0 8px}.pn span{font-size:14px;font-weight:500;color:var(--muted);margin-left:12px}
 .worry{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:10px;max-width:42em}.worry li{background:#fff6d6;border-radius:12px;padding:10px 16px 10px 46px;position:relative}
 .worry li::before{content:"";position:absolute;left:17px;top:18px;width:14px;height:7px;border-left:3px solid var(--coral);border-bottom:3px solid var(--coral);transform:rotate(-45deg)}
+.q{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 16px;margin:0 0 10px}.q legend{font-weight:700;padding:0 6px}.q label{margin-right:18px;display:inline-block;padding:4px 0}
 .tool{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:16px 0;display:grid;gap:10px;max-width:640px}
 .tool label{font-weight:700;font-size:14px}.tool input{width:100%;font:inherit;padding:8px 10px;border:1px solid #b8c2cc;border-radius:8px}
 .sheet{background:#fff;border:1px solid var(--line);max-width:794px;margin:0 auto 32px;padding:40px 44px}
@@ -157,6 +164,9 @@ def head(title, desc):
             f'<title>{html.escape(title)}</title><meta name="description" content="{html.escape(desc)}">'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
             '<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">'
+            f'<meta property="og:type" content="website"><meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(desc)}">'
+            f'<meta property="og:image" content="{SITE}img/ogp.jpg"><meta name="twitter:card" content="summary_large_image">'
+            '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2230%22 fill=%22%23ffd34d%22/%3E%3Cellipse cx=%2232%22 cy=%2230%22 rx=%2218%22 ry=%2213%22 fill=%22%23fff%22/%3E%3Ccircle cx=%2225%22 cy=%2230%22 r=%223%22 fill=%22%23ff7a59%22/%3E%3Ccircle cx=%2232%22 cy=%2230%22 r=%223%22 fill=%22%23ff7a59%22/%3E%3Ccircle cx=%2239%22 cy=%2230%22 r=%223%22 fill=%22%23ff7a59%22/%3E%3C/svg%3E">'
             '<link rel="stylesheet" href="style.css"></head><body>')
 
 def bar(cur):
@@ -193,7 +203,7 @@ SHARED = f"""
 <details><summary>産業医や既存の相談窓口と重なりませんか。</summary><p>こちらは仕事とキャリアの相談、前向きなコーチングを扱います。不調が疑われる場合は、産業医や医療機関につなぎます。</p></details>
 </div></div></section>
 <section><div class="wrap"><h2>担当者</h2><div class="prof"><img src="img/takemura.jpg" alt="{NAME}の写真" width="260" height="290"><div><p class="pn">{NAME}<span>たけむら しょうた</span></p><p>国家資格キャリアコンサルタント。キャリア相談、コーチング、不登校の若者支援に携わってきました。</p><p>相談する方の話を聴くことと、相談を受ける方を支えることの両方を仕事にしています。御社の専属として、毎回同じ担当者がお話を伺います。</p></div></div></div></section>
-<section class="band" id="junbi"><div class="wrap"><h2>お問い合わせ</h2><p class="sub">説明の予約と各フォームは準備中です。公開時にここへつなぎます。</p></div></section>
+@@JUNBI@@
 """
 
 B, Y, G, R = "#8ec9e8", "#ffc56b", "#7ccf9b", "#ffb199"
@@ -234,6 +244,18 @@ def comic(p):
     return (f'<section class="band"><div class="wrap"><h2>{e["ctitle"]}</h2><p class="sub">4コマでご紹介します。</p>'
             f'<div class="comic">{ks}</div><p class="small">使い方のイメージです。</p></div></section>')
 
+def junbi():
+    if not (FORM_MOSHIKOMI or FORM_SHIRYO):
+        return '<section class="band" id="junbi"><div class="wrap"><h2>お問い合わせ</h2><p class="sub">各フォームは準備中です。</p></div></section>'
+    b = []
+    if FORM_SHIRYO: b.append(f'<a class="btn" href="{FORM_SHIRYO}">資料の受け取り・30分の説明</a>')
+    if FORM_MOSHIKOMI: b.append(f'<a class="btn sub" href="{FORM_MOSHIKOMI}">導入を申し込む</a>')
+    if FORM_SUISEN: b.append(f'<a class="btn sub" href="{FORM_SUISEN}">自分の会社に導入してほしい方</a>')
+    return ('<section class="band" id="junbi"><div class="wrap"><h2>お問い合わせ</h2>'
+            '<p class="sub">資料の受け取りや30分の説明は、無料です。こちらから営業のお電話をすることはありません。</p>'
+            f'<div class="cta">{"".join(b)}</div></div></section>')
+SHARED = SHARED.replace("@@JUNBI@@", junbi())
+
 def page(p):
     pts = "".join(f'<div class="card p{i+1}"><h3>{t}</h3><p>{d}</p></div>' for i, (t, d) in enumerate(p["points"]))
     cta = "".join(f'<a class="btn{" sub" if i else ""}" href="{FORMS[k]}">{l}</a>' for i, (l, k) in enumerate(p["cta"]))
@@ -243,15 +265,17 @@ def page(p):
             f'<div class="price"><span>月額基本料 <b>15,000円</b></span><span>相談1回30分 <b>5,000円</b></span><span>最初の3か月は解約自由</span></div>'
             f'<div class="cta">{cta}</div></div><div>{hero_svg(*p["c"])}</div></div></header>'
             + worry(p) + f'<section><div class="wrap"><div class="grid">{pts}</div></div></section>' + SHARED.replace('@@COMIC@@', comic(p)) +
-            f'<section><div class="wrap"><h2>ほかの立場の方へ</h2><div class="others" style="margin-top:18px">{others}</div></div></section>' + FOOT)
+            f'<section><div class="wrap"><h2>ほかの立場の方へ</h2><div class="others" style="margin-top:18px">{others}</div></div></section>' + nayami_links() + FOOT)
 
 TOOLJS = """<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
 (function(){var q=new URLSearchParams(location.search),c=document.getElementById('in-co'),u=document.getElementById('in-url');
 if(c&&q.get('c'))c.value=q.get('c');if(u&&q.get('u'))u.value=q.get('u');
 function draw(){document.querySelectorAll('.co-name').forEach(function(e){e.textContent=(c&&c.value)||'（会社名）';});
 var box=document.getElementById('qr');if(!box)return;box.innerHTML='';
-if(u&&u.value&&window.QRCode){new QRCode(box,{text:u.value,width:150,height:150});document.getElementById('qr-url').textContent=u.value;}
-else{box.textContent='予約ページのURLを入力するとQRコードが出ます';document.getElementById('qr-url').textContent='';}}
+var t=document.getElementById('qr-url');t.textContent=(u&&u.value)||'';
+if(u&&u.value&&window.QRCode){new QRCode(box,{text:u.value,width:150,height:150});}
+else if(u&&u.value){box.textContent='QRコードを表示できませんでした。下のURLをお使いください';}
+else{box.textContent='予約ページのURLを入力するとQRコードが出ます';}}
 [c,u].forEach(function(e){if(e)e.addEventListener('input',draw);});draw();
 var b=document.getElementById('print');if(b)b.addEventListener('click',function(){try{window.print();}catch(e){}});})();</script>"""
 
@@ -280,9 +304,130 @@ TEIAN = (head("社外キャリア相談制度 導入のご提案", "上司や経
  '<h3>心配への答え</h3><ul style="margin:6px 0 14px;padding-left:1.2em"><li>相談内容は会社に伝わらない。会社に届くのは件数と、本人が望んだ声だけ。</li><li>不調が疑われる場合は、産業医や医療機関につなぐ。</li><li>使い方は会社で決められる（入社後フォロー面談、前向きなコーチング、管理職の面談準備など）。</li></ul>'
  f'<p class="small">金額は税別。担当：{NAME}（国家資格キャリアコンサルタント）</p></div>' + TOOLJS + FOOT)
 
+# ---- 悩み別ページ、3分診断、会社別の提案ページ ----
+NAYAMI = [
+ dict(file="wakate-rishoku.html", nav="若手が本音を言わずに辞める", to="keieisha.html", tolabel="経営者の方へ",
+      desc="若手社員が本音を言わないまま退職する職場で、辞める前に話を聞く方法。社外の専属キャリアコンサルタントによる相談と入社後フォロー面談。",
+      h1="若手が、本音を言わないまま辞めていく。",
+      lead="退職の話が出たときには、もう気持ちは決まっている。そうなる前に、社外で話せる相手を用意できます。",
+      secs=[("なぜ本音が出ないのか", "上司に話すと評価に響くかもしれない。話しても変わらないかもしれない。そう感じると、人は黙ったまま転職先を探します。社内の面談を増やしても、同じ相手には同じことしか話せません。"),
+            ("社外の相談相手にできること", "会社の評価と関係のない相手には、まだ整理できていない気持ちも話せます。話すうちに、辞めたい理由が仕事の内容なのか、人間関係なのか、将来への不安なのかが見えてきます。"),
+            ("この制度での使い方", "入社1か月、3か月、6か月の節目に30分の面談を案内できます。年に1度、続けている理由と辞めたくなる瞬間を聞く面談も行えます。本人が望んだことだけを、匿名で会社にお伝えします。")]),
+ dict(file="kanrishoku-hihei.html", nav="管理職が疲れている", to="kanrishoku.html", tolabel="管理職の方へ",
+      desc="部下の相談と育成を抱える管理職の負担を軽くする方法。相談を受ける人を支える、社外のキャリアコンサルタントによる面談準備と壁打ち。",
+      h1="相談を受ける管理職が、疲れている。",
+      lead="部下の話を聞き、育て、自分の成果も出す。その負担を一人で抱えている管理職に、社外の相談先を用意できます。",
+      secs=[("なぜ疲れるのか", "部下の相談には正解がありません。どう答えたか、あれでよかったのかを、あとから一人で考え続けることになります。立場上、弱音を言える相手も社内には多くありません。"),
+            ("社外の相談相手にできること", "面談の前に、何を聞き、何を伝え、何を言わないかを一緒に整理できます。終わったあとには、うまくいった点と次に変える点をふりかえれます。"),
+            ("この制度での使い方", "管理職の方も、社員と同じ30分の相談を使えます。部下の相談そのものを社外に任せることもできるので、管理職が一人で受け止める量が減ります。")]),
+ dict(file="keieisha-sodan.html", nav="経営者に相談相手がいない", to="keieisha.html", tolabel="経営者の方へ",
+      desc="社内にも家族にも話しにくい経営者の悩みを、利害のない社外の相手に話す月1回30分。社員の相談窓口とあわせて月額15,000円。",
+      h1="経営者には、相談相手がいない。",
+      lead="社員には言えない。家族には心配をかけたくない。取引先には弱みを見せられない。月に1度、利害のない相手に話す時間を持てます。",
+      secs=[("なぜ相談しにくいのか", "経営者の言葉は、社内では決定として受け取られます。迷っている段階の話を、迷っているまま話せる相手が必要です。"),
+            ("社外の相談相手にできること", "答えを出すのは経営者ご自身です。こちらは、考えを言葉にする手伝いをします。人と組織の悩みは、キャリアコンサルティングとコーチングの専門領域です。"),
+            ("この制度での使い方", "基本料に含まれる月に1度の定例30分を、ご自身の壁打ちに使えます。同じ場で、社員から届いた声も匿名で受け取れます。")]),
+ dict(file="sodan-kawaranai.html", nav="相談しても変わらないと思われている", to="jinji.html", tolabel="人事・総務の方へ",
+      desc="相談窓口を置いても使われない、相談しても変わらないと思われている職場へ。社員の声が会社に届き、返事が戻る仕組み。",
+      h1="「相談しても、どうせ変わらない」",
+      lead="相談窓口を置いても使われない。その理由の多くは、話したことがどこにも届かないと思われているからです。",
+      secs=[("置くだけの窓口が使われない理由", "相談した結果が見えないと、人は二度目の相談をしません。窓口があることを忘れてしまうこともあります。"),
+            ("声が届き、返事が戻る仕組み", "30分の相談の最後に、会社に伝えたいことがあるかを伺います。伝える内容は本人が選び、個人が特定されにくい表現に整えて、一緒に確認してから会社に届けます。会社の受け止めは、次の機会に本人へお返しします。"),
+            ("この制度での使い方", "届いた声と会社の対応を、社内に掲示できる1枚にまとめることもできます。「話せば変わる」が見えると、相談は増えていきます。")]),
+ dict(file="stress-check-junbi.html", nav="50人未満のストレスチェック義務化に向けて", to="keieisha.html", tolabel="経営者の方へ",
+      desc="労働者50人未満の事業場にもストレスチェックが義務化されます。検査の前後に、ふだんから話せる相手がいる体制づくりを。",
+      h1="小さな会社にも、心の健康への備えが求められます。",
+      lead="労働者50人未満の事業場にも、ストレスチェックの実施が義務づけられることが決まっています。検査だけでなく、ふだんから話せる相手がいる体制を整えておけます。",
+      secs=[("何が変わるのか", "これまで努力義務だった50人未満の事業場でも、ストレスチェックの実施が必要になります。施行の時期や実施の方法は、厚生労働省の最新の案内をご確認ください。"),
+            ("検査だけでは足りないこと", "検査は年に1度の確認です。日々の小さな気がかりを、不調になる前に話せる場所は、別に必要です。歯の治療と毎日の歯みがきが別であるのと同じです。"),
+            ("この制度での使い方", "この窓口はストレスチェックの実施者ではなく、医療機関でもありません。仕事とキャリアの相談を、ふだんから受ける役割です。不調が疑われるときは、産業医や医療機関につなぎます。")]),
+ dict(file="coaching-kaisha-futan.html", nav="コーチングを会社負担で受けたい", to="hataraku.html", tolabel="働くあなたへ",
+      desc="コーチングやキャリア相談を、自己負担なしで受ける方法。会社に制度として導入してもらうための提案の進め方。",
+      h1="コーチングを、会社の制度として受ける。",
+      lead="もっと力を出したい。これからのキャリアを整理したい。その費用を自分で払い続けるのは大変です。会社の制度になれば、自己負担なしで使えます。",
+      secs=[("会社にとっての利点", "社員が前向きに働き続けることは、会社にとっても得です。採用の場面でも、社外の専門家に相談できる制度は打ち出しになります。"),
+            ("提案のしかた", "上司や人事に渡せる1枚の資料を用意しています。費用と手間がひと目で分かるので、そのまま見せられます。提案メールの文例もあります。"),
+            ("名前を出さずに伝えたい場合", "会社名を教えていただければ、こちらから会社に案内します。あなたのお名前は一切伝えません。人数の少ない職場では推測されることがあるため、伝え方はあなたが選べます。")]),
+]
+
+def nayami_links():
+    links = "".join(f'<a href="{n["file"]}">{n["nav"]}</a>' for n in NAYAMI)
+    return (f'<section class="band"><div class="wrap"><h2>お悩みから探す</h2><div class="others" style="margin-top:18px">{links}'
+            f'<a href="shindan.html">3分診断：相談が届く職場か</a><a href="mitsumori.html">費用の試算と提案ページ</a></div></div></section>')
+
+def nayami_page(n):
+    secs = "".join(f'<div class="card"><h3>{h}</h3><p>{t}</p></div>' for h, t in n["secs"])
+    return (head(n["nav"], n["desc"]) + bar("") +
+            f'<header class="hero"><div class="wrap"><div><p class="tag">お悩みから探す</p><h1>{n["h1"]}</h1><p class="lead">{n["lead"]}</p>'
+            f'<div class="cta"><a class="btn" href="{n["to"]}">{n["tolabel"]}の案内を見る</a><a class="btn sub" href="shindan.html">3分診断を試す</a></div></div>'
+            f'<div>{hero_svg("#8ec9e8", "#ffc56b")}</div></div></header>'
+            f'<section><div class="wrap"><div class="grid">{secs}</div></div></section>'
+            '<section class="band"><div class="wrap"><h2>料金</h2><p class="sub">月額基本料15,000円、相談1回30分5,000円（税別）。最初の3か月はいつでも解約できます。</p>'
+            '<div class="cta"><a class="btn" href="index.html">サービスの全体を見る</a><a class="btn sub" href="mitsumori.html">費用を試算する</a></div></div></section>'
+            + nayami_links() + FOOT)
+
+SHINDAN_Q = ["社員が、上司以外に仕事の悩みを話せる相手がいる。", "直近1年で、退職する人から理由を率直に聞けた。", "管理職に、部下対応の悩みを相談できる相手がいる。",
+             "社員の声を受けて会社が変えたことを、社員に伝えている。", "入社後3か月以内に、上司以外と話す機会を設けている。", "人事・総務の担当者に、相談相手がいる。",
+             "経営者自身に、利害のない相談相手がいる。", "社員が匿名で意見を伝える方法がある。"]
+SHINDAN = (head("3分診断：相談が届く職場か", "8つの質問に答えると、社員の声が会社に届きやすい職場かどうかの目安が分かります。") + bar("") +
+ '<header class="hero"><div class="wrap" style="grid-template-columns:1fr"><div><p class="tag">3分診断</p><h1>相談が届く職場か</h1>'
+ '<p class="lead">8つの質問に、いまの職場を思い浮かべて答えてください。簡易的な目安で、専門的な診断ではありません。</p></div></div></header>'
+ '<section><div class="wrap"><form id="sf">' +
+ "".join(f'<fieldset class="q"><legend>{i+1}. {q}</legend>'
+         f'<label><input type="radio" name="q{i}" id="q{i}y" value="1"> はい</label>'
+         f'<label><input type="radio" name="q{i}" id="q{i}n" value="0"> いいえ</label>'
+         f'<label><input type="radio" name="q{i}" id="q{i}u" value="0"> 分からない</label></fieldset>' for i, q in enumerate(SHINDAN_Q)) +
+ '<button class="btn" type="submit">結果を見る</button><p class="small" id="sf-msg" style="margin-top:10px"></p></form>'
+ '<div id="res" class="card p1" hidden style="margin-top:24px"><h3 id="res-t"></h3><p id="res-b"></p>'
+ '<div class="cta"><a class="btn" href="index.html">サービスの全体を見る</a><a class="btn sub" href="mitsumori.html">費用を試算する</a><a class="btn sub" href="' + FORMS["setsumei"] + '">資料を受け取る</a></div></div></div></section>'
+ '<script>(function(){var f=document.getElementById("sf");f.addEventListener("submit",function(e){e.preventDefault();var n=' + str(len(SHINDAN_Q)) + ',s=0,a=0;'
+ 'for(var i=0;i<n;i++){var r=f.querySelector("input[name=q"+i+"]:checked");if(r){a++;s+=+r.value;}}'
+ 'var m=document.getElementById("sf-msg");if(a<n){m.textContent="まだ答えていない質問が"+(n-a)+"つあります。";return;}m.textContent="";'
+ 'var t,b;if(s>=6){t="声が届きやすい職場です（はい "+s+" / 8）";b="相談の経路がすでにいくつかあります。足りない経路がないか、「いいえ」と答えた項目を見直してみてください。社外の相談先は、いまある経路を補う役割になります。";}'
+ 'else if(s>=3){t="一部で声が止まっているかもしれません（はい "+s+" / 8）";b="届く経路と届かない経路が混ざっています。特に、相談を受ける側（管理職、人事、経営者）に相談先があるかを確かめてください。";}'
+ 'else{t="声が届きにくい状態かもしれません（はい "+s+" / 8）";b="社員が話せる相手と、話した結果が見える仕組みの両方が少ない状態です。最初の一歩として、社外に1つ相談先を置くことを検討できます。";}'
+ 'document.getElementById("res-t").textContent=t;document.getElementById("res-b").textContent=b;var r=document.getElementById("res");r.hidden=false;r.scrollIntoView({behavior:"smooth"});});})();</script>'
+ + nayami_links() + FOOT)
+
+MITSUMORI = (head("費用の試算と提案ページ", "会社名、従業員数、想定の相談件数を入れると、年間費用の目安と導入スケジュールを1枚で確認・印刷できます。") + bar("") +
+ '<div class="wrap"><div class="tool"><b>会社に合わせた提案ページを作る</b>'
+ '<div><label for="m-co">会社名</label><input id="m-co" placeholder="例：株式会社サンプル"></div>'
+ '<div><label for="m-n">月の相談件数の見込み</label><input id="m-n" type="number" min="0" value="4"></div>'
+ '<div><label for="m-h">年間の入社予定人数（入社後フォロー面談を行う場合。行わない場合は0）</label><input id="m-h" type="number" min="0" value="0"></div>'
+ '<div><button class="btn" id="m-print" type="button">印刷する（PDF保存も可）</button></div>'
+ '<p class="small" style="margin:0">ボタンが動かないときは、ブラウザの印刷（Ctrl+P または ⌘+P）を使ってください。</p></div></div>'
+ '<div class="sheet"><p class="co"><span id="m-name"></span> 御中</p><h1>社外キャリア相談制度 ご提案と費用の目安</h1>'
+ '<div class="tb"><table><tr><th>月額基本料</th><td>15,000円 × 12か月 ＝ <b>180,000円</b></td></tr>'
+ '<tr><th>個別相談</th><td>月 <span id="m-n2"></span>件 × 5,000円 × 12か月 ＝ <b id="m-s"></b></td></tr>'
+ '<tr><th>入社後フォロー面談</th><td><span id="m-h2"></span>人 × 3回 × 5,000円 ＝ <b id="m-f"></b></td></tr>'
+ '<tr><th>年間の目安</th><td><b id="m-t" style="font-size:20px"></b>（税別。相談は使った分だけのご請求です）</td></tr></table></div>'
+ '<h3 style="margin-top:18px">導入の流れ</h3><ol class="steps"><li><span>30分のオンライン説明。</span></li><li><span>申込フォームと電子契約。</span></li>'
+ '<li><span>案内チラシを社員の方に配る。説明会は不要です。</span></li><li><span>社員の方が直接予約し、相談が始まる。</span></li></ol>'
+ '<h3 style="margin-top:18px">お約束</h3><ul style="margin:6px 0 0;padding-left:1.2em"><li>相談内容は会社に伝えません。会社に届くのは件数と、本人が望んだ声だけです。</li>'
+ '<li>最初の3か月は、いつでも解約できます。</li><li>不調が疑われる場合は、産業医や医療機関につなぎます。</li></ul>'
+ f'<p class="small" style="margin-top:16px">担当：{NAME}（国家資格キャリアコンサルタント）</p></div>'
+ '<script>(function(){var q=new URLSearchParams(location.search),c=document.getElementById("m-co"),n=document.getElementById("m-n"),h=document.getElementById("m-h");'
+ 'if(q.get("c"))c.value=q.get("c");if(q.get("n"))n.value=q.get("n");if(q.get("h"))h.value=q.get("h");'
+ 'function yen(x){return x.toLocaleString("ja-JP")+"円";}function d(){var a=Math.max(0,+n.value||0),b=Math.max(0,+h.value||0),s=a*5000*12,f=b*3*5000;'
+ 'document.getElementById("m-name").textContent=c.value||"（会社名）";document.getElementById("m-n2").textContent=a;document.getElementById("m-h2").textContent=b;'
+ 'document.getElementById("m-s").textContent=yen(s);document.getElementById("m-f").textContent=yen(f);document.getElementById("m-t").textContent=yen(180000+s+f);}'
+ '[c,n,h].forEach(function(e){e.addEventListener("input",d);});d();'
+ 'document.getElementById("m-print").addEventListener("click",function(){try{window.print();}catch(e){}});})();</script>' + FOOT)
+
+def more_pages():
+    out = {n["file"]: nayami_page(n) for n in NAYAMI}
+    out.update({"shindan.html": SHINDAN, "mitsumori.html": MITSUMORI})
+    return out
+
+
 os.makedirs(OUT, exist_ok=True)
 files = {p["file"]: page(p) for p in PAGES}
 files.update({"annai.html": ANNAI, "teian.html": TEIAN, "style.css": CSS})
+files.update(more_pages())
+_pages = sorted(k for k in files if k.endswith(".html"))
+files["sitemap.xml"] = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + "".join(f"<url><loc>{SITE}{'' if k == 'index.html' else k}</loc></url>\n" for k in _pages) + "</urlset>\n")
+files["robots.txt"] = f"User-agent: *\nAllow: /\nSitemap: {SITE}sitemap.xml\n"
 for name, body in files.items():
     with open(os.path.join(OUT, name), "w", encoding="utf-8") as f:
         f.write(body)
