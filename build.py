@@ -6,9 +6,9 @@ OUT = sys.argv[1] if len(sys.argv) > 1 else "site"
 NAME = "竹村正太"
 SITE = "https://doushimasho.github.io/senzoku/"
 # Googleフォームの公開URL（docs.google.com/forms/.../viewform）を入れる。空のままなら「準備中」の欄に飛ぶ
-FORM_MOSHIKOMI = ""   # フォーム1：導入のお申込み
-FORM_SHIRYO = ""      # フォーム2：資料の受け取り・30分説明のご希望
-FORM_SUISEN = ""      # フォーム3：会社に導入してほしい方へ
+FORM_MOSHIKOMI = "https://docs.google.com/forms/d/e/1FAIpQLSdLWyaKJLw-DX6UcEgjtbLcXnZ2dcKj4_qNYGshUmNq85MQAQ/viewform"   # フォーム1：導入のお申込み
+FORM_SHIRYO = "https://docs.google.com/forms/d/e/1FAIpQLSesxZUBfGm4NMgQSR6qnvHJkhl7DODfvgOXhJOcAZSlxScpYg/viewform"      # フォーム2：資料の受け取り・30分説明のご希望
+FORM_SUISEN = "https://docs.google.com/forms/d/e/1FAIpQLSfFOu-RtAR-5cgqPioJ94SktrWd5nMysJgyRR93mLXmdw7o_w/viewform"      # フォーム3：会社に導入してほしい方へ
 FORMS = {
     "setsumei": FORM_SHIRYO or "#junbi", "kyujin": FORM_SHIRYO or "#junbi",
     "suisen": FORM_SUISEN or "#junbi", "moshikomi": FORM_MOSHIKOMI or "#junbi",
@@ -192,13 +192,14 @@ SHARED = f"""
 <tr><th>基本料に含むもの</th><td>社員専用の予約ページ、社員向けの案内ページと配布用チラシ、会社へ声を届ける仕組み、窓口担当の方との月に1度の定例（30分）、求人や自社サイトでの表記</td></tr>
 <tr><th>個別相談</th><td>1回30分 5,000円。使った分だけ。どなたが使っても同額</td></tr>
 <tr><th>利用の上限</th><td>1人あたり月2回まで。会社ごとに月の上限件数を決められます</td></tr>
-<tr><th>契約</th><td>12か月の自動更新。最初の3か月はいつでも解約できます</td></tr></table></div>
+<tr><th>契約</th><td>12か月の自動更新。最初の3か月はいつでも解約できます</td></tr><tr><th>いまの価格</th><td>月額15,000円は、先着3社までの価格です。この価格でご契約いただいた会社は、継続しているあいだ、更新後も据え置きます</td></tr><tr><th>ご紹介の特典</th><td>ご紹介で新しい契約が決まると、紹介した会社とされた会社の両方の基本料を1か月分無料にします。年払いの会社には、代わりに相談3回分を無料にします</td></tr></table></div>
 <h3 style="margin-top:26px">申込みから利用開始まで</h3>
 <ol class="steps"><li><span>30分のオンライン説明。御社の状況を伺います。</span></li><li><span>申込フォームと電子契約。</span></li>
 <li><span>案内ページのURLか、印刷した案内チラシを社員の方に配ります。説明会は不要です。</span></li><li><span>社員の方が直接予約し、相談が始まります。</span></li></ol></div></section>
 <section><div class="wrap"><h2>よくある質問</h2><div style="margin-top:18px">
 <details><summary>誰が相談したか、会社に分かりますか。</summary><p>分かりません。社員の方は会社を通さずに予約します。会社には月の件数だけを報告します。</p></details>
 <details><summary>利用が少なかったら、もったいなくありませんか。</summary><p>相談の費用は使った分だけです。月に1度の定例は、窓口担当の方ご自身の相談に使えます。利用が少ない月は、社員の方への再案内文をこちらで用意します。</p></details>
+<details><summary>知り合いの会社を紹介すると、特典はありますか。</summary><p>あります。紹介した会社が契約に至ると、紹介した会社とされた会社の両方の基本料を1か月分無料にします。年払いの会社には、代わりに相談3回分（15,000円分）を無料にします。紹介は、窓口担当の方から一言お知らせいただくだけで結構です。</p></details>
 <details><summary>担当が不在のときはどうなりますか。</summary><p>病気や事故などで1か月を通じて実施できなかった場合、その月の基本料はいただきません。</p></details>
 <details><summary>産業医や既存の相談窓口と重なりませんか。</summary><p>こちらは仕事とキャリアの相談、前向きなコーチングを扱います。不調が疑われる場合は、産業医や医療機関につなぎます。</p></details>
 </div></div></section>
@@ -299,7 +300,7 @@ TEIAN = (head("社外キャリア相談制度 導入のご提案", "上司や経
  '<div class="sheet"><p class="co"><span class="co-name"></span> 御中</p><h1>社外キャリア相談制度 導入のご提案</h1>'
  '<p><b>提案の要点：</b>月額15,000円で、社員が社外の国家資格キャリアコンサルタントに相談できる制度を導入します。</p>'
  '<h3>なぜ必要か</h3><ul style="margin:6px 0 14px;padding-left:1.2em"><li>辞めると決める前に、社員が本音を話せる相手が社内にいない。</li><li>管理職が部下の相談を一人で抱えている。</li><li>求人で「人を大切にする会社」だと具体的に示せる材料が少ない。</li></ul>'
- '<h3>費用</h3><div class="tb"><table><tr><th>月額基本料</th><td>15,000円（年額18万円）。窓口担当者との月に1度の定例30分を含む</td></tr><tr><th>個別相談</th><td>1回30分5,000円。使った分だけ。月の上限件数を決められる</td></tr><tr><th>初期費用・解約</th><td>初期費用なし。最初の3か月はいつでも解約できる</td></tr></table></div>'
+ '<h3>費用</h3><div class="tb"><table><tr><th>月額基本料</th><td>15,000円（年額18万円）。窓口担当者との月に1度の定例30分を含む</td></tr><tr><th>個別相談</th><td>1回30分5,000円。使った分だけ。月の上限件数を決められる</td></tr><tr><th>先着価格</th><td>月額15,000円は先着3社までの価格。契約を続けるあいだは更新後も据え置き</td></tr><tr><th>初期費用・解約</th><td>初期費用なし。最初の3か月はいつでも解約できる</td></tr></table></div>'
  '<h3 style="margin-top:16px">社内の手間</h3><ul style="margin:6px 0 14px;padding-left:1.2em"><li>導入時は、案内ページのURLか印刷した案内チラシを社員に配るだけ。説明会は不要。</li><li>予約は社員が直接行う。窓口担当者の作業は月に1度の定例30分のみ。</li></ul>'
  '<h3>心配への答え</h3><ul style="margin:6px 0 14px;padding-left:1.2em"><li>相談内容は会社に伝わらない。会社に届くのは件数と、本人が望んだ声だけ。</li><li>不調が疑われる場合は、産業医や医療機関につなぐ。</li><li>使い方は会社で決められる（入社後フォロー面談、前向きなコーチング、管理職の面談準備など）。</li></ul>'
  f'<p class="small">金額は税別。担当：{NAME}（国家資格キャリアコンサルタント）</p></div>' + TOOLJS + FOOT)
@@ -404,7 +405,7 @@ MITSUMORI = (head("費用の試算と提案ページ", "会社名、従業員数
  '<h3 style="margin-top:18px">導入の流れ</h3><ol class="steps"><li><span>30分のオンライン説明。</span></li><li><span>申込フォームと電子契約。</span></li>'
  '<li><span>案内チラシを社員の方に配る。説明会は不要です。</span></li><li><span>社員の方が直接予約し、相談が始まる。</span></li></ol>'
  '<h3 style="margin-top:18px">お約束</h3><ul style="margin:6px 0 0;padding-left:1.2em"><li>相談内容は会社に伝えません。会社に届くのは件数と、本人が望んだ声だけです。</li>'
- '<li>最初の3か月は、いつでも解約できます。</li><li>不調が疑われる場合は、産業医や医療機関につなぎます。</li></ul>'
+ '<li>月額15,000円は先着3社までの価格です。継続しているあいだは、更新後も据え置きます。</li><li>最初の3か月は、いつでも解約できます。</li><li>不調が疑われる場合は、産業医や医療機関につなぎます。</li></ul>'
  f'<p class="small" style="margin-top:16px">担当：{NAME}（国家資格キャリアコンサルタント）</p></div>'
  '<script>(function(){var q=new URLSearchParams(location.search),c=document.getElementById("m-co"),n=document.getElementById("m-n"),h=document.getElementById("m-h");'
  'if(q.get("c"))c.value=q.get("c");if(q.get("n"))n.value=q.get("n");if(q.get("h"))h.value=q.get("h");'
