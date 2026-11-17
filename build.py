@@ -165,7 +165,7 @@ def head(title, desc):
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
             '<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">'
             f'<meta property="og:type" content="website"><meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(desc)}">'
-            f'<meta property="og:image" content="{SITE}img/ogp.jpg"><meta name="twitter:card" content="summary_large_image">'
+            f'<meta property="og:image" content="{SITE}ogp.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="google-site-verification" content="2t_jYbV7BGn_y59pKTI4hIXxJJtO_QwigzLAIRFgzhE">'
             '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2230%22 fill=%22%23ffd34d%22/%3E%3Cellipse cx=%2232%22 cy=%2230%22 rx=%2218%22 ry=%2213%22 fill=%22%23fff%22/%3E%3Ccircle cx=%2225%22 cy=%2230%22 r=%223%22 fill=%22%23ff7a59%22/%3E%3Ccircle cx=%2232%22 cy=%2230%22 r=%223%22 fill=%22%23ff7a59%22/%3E%3Ccircle cx=%2239%22 cy=%2230%22 r=%223%22 fill=%22%23ff7a59%22/%3E%3C/svg%3E">'
             '<link rel="stylesheet" href="style.css"></head><body>')
 
@@ -203,7 +203,7 @@ SHARED = f"""
 <details><summary>担当が不在のときはどうなりますか。</summary><p>病気や事故などで1か月を通じて実施できなかった場合、その月の基本料はいただきません。</p></details>
 <details><summary>産業医や既存の相談窓口と重なりませんか。</summary><p>こちらは仕事とキャリアの相談、前向きなコーチングを扱います。不調が疑われる場合は、産業医や医療機関につなぎます。</p></details>
 </div></div></section>
-<section><div class="wrap"><h2>担当者</h2><div class="prof"><img src="img/takemura.jpg" alt="{NAME}の写真" width="260" height="290"><div><p class="pn">{NAME}<span>たけむら しょうた</span></p><p>国家資格キャリアコンサルタント。キャリア相談、コーチング、不登校の若者支援に携わってきました。</p><p>相談する方の話を聴くことと、相談を受ける方を支えることの両方を仕事にしています。御社の専属として、毎回同じ担当者がお話を伺います。</p></div></div></div></section>
+<section><div class="wrap"><h2>担当者</h2><div class="prof"><img src="takemura.jpg" alt="{NAME}の写真" width="260" height="290"><div><p class="pn">{NAME}<span>たけむら しょうた</span></p><p>国家資格キャリアコンサルタント。キャリア相談、コーチング、不登校の若者支援に携わってきました。</p><p>相談する方の話を聴くことと、相談を受ける方を支えることの両方を仕事にしています。御社の専属として、毎回同じ担当者がお話を伺います。</p></div></div></div></section>
 @@JUNBI@@
 """
 
@@ -435,5 +435,6 @@ for name, body in files.items():
 import shutil
 src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "img")
 if os.path.isdir(src):
-    shutil.copytree(src, os.path.join(OUT, "img"), dirs_exist_ok=True)
+    for f in os.listdir(src):  # 画像はフォルダに分けず、ページと同じ場所に置く（GitHubのアップロードでフォルダが崩れるため）
+        shutil.copy(os.path.join(src, f), os.path.join(OUT, f))
 print("\n".join(sorted(files)))

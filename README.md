@@ -4,7 +4,7 @@
 1. GitHubにログインし、右上の「+」から「New repository」を選ぶ。
 2. Repository name に好きな名前（例：senzoku）を入れ、Public を選んで「Create repository」を押す。
 3. 作成後の画面で「uploading an existing file」を押す。
-4. このフォルダの中身（index.html などのファイルと img フォルダ）をすべてドラッグして入れ、「Commit changes」を押す。
+4. このフォルダの中身（index.html などのファイル）をすべてドラッグして入れ、「Commit changes」を押す。
 5. リポジトリの「Settings」→「Pages」を開く。
 6. 「Branch」で main と /(root) を選び、「Save」を押す。
 7. 数分待つと、同じ画面に公開URL（https://アカウント名.github.io/リポジトリ名/）が表示される。
@@ -12,7 +12,7 @@
 ## ページの直し方
 - 文章やページ構成は build.py の中にある。直したら `python3 build.py 出力フォルダ` で全ページを作り直す。
 - GoogleフォームのURLは、build.py の上のほうにある FORM_MOSHIKOMI、FORM_SHIRYO、FORM_SUISEN の3か所に入れる。入れて作り直すと、全ページのボタンがフォームにつながる。
-- 写真は img フォルダに入れる。
+- 写真は sitebuild の img フォルダに入れておくと、作り直したときにページと同じ場所へコピーされる（公開側ではフォルダに分けない）。
 
 ## ファイル
 - index.html：トップ
