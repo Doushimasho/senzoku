@@ -1,4 +1,5 @@
 
+.vid{position:relative;max-width:760px;aspect-ratio:16/9;margin-top:16px;border-radius:16px;overflow:hidden;background:#000}.vid iframe,.vid video{position:absolute;inset:0;width:100%;height:100%;border:0}
 :root{--bg:#fffdf6;--sky:#e6f5fb;--sun:#ffd34d;--coral:#ff7a59;--leaf:#2f9e6b;--ink:#243342;--muted:#5d6b78;--line:#e3e8ee;--card:#ffffff;
 --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;--body:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;color-scheme:light}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.85}

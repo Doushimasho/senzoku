@@ -4,6 +4,12 @@ import os, sys, html
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else "site"
 NAME = "竹村正太"
+YAGO = ""        # 屋号（決まったら入れる。空なら表示しない）
+REG_NO = ""      # キャリアコンサルタント登録番号（空なら表示しない）
+VIDEO_WELCOME = ""  # 挨拶動画。YouTubeの動画ID（例：dQw4w9WgXcQ）か、同じ場所に置いたmp4のファイル名。空なら表示しない
+VIDEO_SAMPLE = ""   # 面談の雰囲気の動画（同上）
+CF_TOKEN = "f3ce115577a342c1b827ba55d74a7642"    # Cloudflare Web Analyticsのトークン。空なら計測タグを入れない
+GC_CODE = ""     # GoatCounterを使う場合のコード（無料版は非商用向けのため、基本はCloudflareを使う）
 SITE = "https://doushimasho.github.io/senzoku/"
 # Googleフォームの公開URL（docs.google.com/forms/.../viewform）を入れる。空のままなら「準備中」の欄に飛ぶ
 FORM_MOSHIKOMI = "https://docs.google.com/forms/d/e/1FAIpQLSdLWyaKJLw-DX6UcEgjtbLcXnZ2dcKj4_qNYGshUmNq85MQAQ/viewform"   # フォーム1：導入のお申込み
@@ -46,11 +52,12 @@ COMIC = ('<div class="comic">'
          + koma(4, [("#8ec9e8", "#5b4636"), ("#ffc56b", "#2f3b52")], "伝えたいことだけを、匿名で会社へ。会社からの返事も戻ってくる。")
          + '</div><p class="small">使い方のイメージです。</p>')
 
-USAGE = [("入社後フォロー面談", "入社1か月、3か月、6か月の節目に30分ずつ。社外にも話せる相手がいる安心感をつくります。", "新入社員、中途入社の方に"),
+USAGE = [("新入社員の最初の1年", "入社1か月、3か月、6か月、1年の節目に30分ずつ。社外にも話せる相手がいる安心感をつくります。", "新入社員、中途入社の方に"),
          ("辞める前に聞く面談", "退職が決まってからではなく、在職中に先回りして聞きます。", "年に1度、希望者または全員に"),
          ("前向きなコーチング", "目標づくり、昇進や異動の準備、やる気の立て直し。困りごとがなくても使えます。", "もっと力を出したい方に"),
          ("面談の準備", "部下との難しい面談の前に、何をどう伝えるかを整理します。", "管理職の方に"),
-         ("月に1度の壁打ち", "基本料に含まれる30分の定例を、利害のない相手との相談に使えます。", "経営者、人事の方に")]
+         ("いつでも話せる壁打ち相手", "チャットでいつでも軽く相談でき、月2回・各30分の面談も基本料に含まれます。利害のない相手との壁打ちに使えます。", "経営者、人事の方に"),
+         ("研修や制度に組み込む", "新人研修、3年目研修、管理職への昇格など、会社の取り組みの一部として面談を付けます。", "研修担当の方に")]
 
 PAGES = [
  dict(file="index.html", nav="トップ", name="社外の専属キャリアコンサルタント", c=("#8ec9e8", "#ffc56b"),
@@ -60,23 +67,23 @@ PAGES = [
       points=[("社員が直接予約", "会社を通さずに予約できるので、担当の方の手間が増えません。"),
               ("声が会社に届く", "社員が望んだことだけを、匿名で会社にお伝えします。"),
               ("相談を受ける人も支える", "管理職、人事、経営者の方ご自身の相談相手にもなります。")],
-      cta=[("30分の説明を予約する", "setsumei")]),
+      cta=[("まずは話を聞いてみる（30分・無料）", "setsumei")]),
  dict(file="keieisha.html", nav="経営者の方へ", name="社長と社員の、社外の相談役", c=("#ffc56b", "#7ccf9b"),
       desc="中小企業の経営者向け。社員の相談窓口と、経営者自身の相談相手を月額15,000円で。社外の国家資格キャリアコンサルタントが担当。",
       h1="社員の相談先と、あなた自身の相談相手を同時に。",
-      lead="社員が辞めると決めてから、初めて本音を知る。そうなる前に、社外で話せる相手を用意できます。月に1度の30分は、あなた自身の壁打ちに使えます。",
+      lead="社員が辞めると決めてから、初めて本音を知る。そうなる前に、社外で話せる相手を用意できます。月2回の30分は、あなた自身の壁打ちに使えます。",
       points=[("費用は使った分だけ", "相談は1回30分5,000円。月の上限件数を決められます。"),
               ("小さく始められる", "初期費用はありません。最初の3か月はいつでも解約できます。"),
-              ("利害のない聞き手", "社内の誰にも言いにくいことを、月に1度、社外の相手に話せます。")],
-      cta=[("30分の説明を予約する", "setsumei")]),
+              ("利害のない聞き手", "社内の誰にも言いにくいことを、月に2回まで、社外の相手に話せます。")],
+      cta=[("まずは話を聞いてみる（30分・無料）", "setsumei")]),
  dict(file="jinji.html", nav="人事・総務の方へ", name="人事のとなりの相談窓口", c=("#7ccf9b", "#8ec9e8"),
       desc="ひとり人事・兼務の人事担当者向け。社員の相談窓口を社外に置き、導入の手間はURLを共有するだけ。上司への提案資料つき。",
       h1="社員の相談を、一人で抱えなくていい。",
-      lead="人事を一人で、あるいは兼務で担っている方へ。社員の相談窓口を社外に置けます。あなた自身にも、月に1度の相談相手ができます。",
+      lead="人事を一人で、あるいは兼務で担っている方へ。社員の相談窓口を社外に置けます。あなた自身にも、月に2回まで話せる相談相手ができます。",
       points=[("導入はURLを配るだけ", "説明会は不要です。配布用の案内チラシも、会社名を入れてすぐ印刷できます。"),
               ("上司に出せる資料あり", "費用と手間を1枚にまとめた提案資料を用意しています。"),
               ("報告は件数だけ", "誰が相談したかは伝わりません。毎月、件数だけを報告します。")],
-      cta=[("上司に見せる資料を開く", "shiryo"), ("30分の説明を予約する", "setsumei")]),
+      cta=[("上司に見せる資料を開く", "shiryo"), ("まずは話を聞いてみる（30分・無料）", "setsumei")]),
  dict(file="saiyo.html", nav="採用担当の方へ", name="求人票に書けるキャリア相談制度", c=("#ffb199", "#8ec9e8"),
       desc="採用担当者向け。求人票に書ける社外キャリア相談制度。入社後フォロー面談にも使え、応募者の安心材料になります。",
       h1="求人票に書ける制度になります。",
@@ -104,6 +111,7 @@ PAGES = [
 ]
 
 CSS = """
+.vid{position:relative;max-width:760px;aspect-ratio:16/9;margin-top:16px;border-radius:16px;overflow:hidden;background:#000}.vid iframe,.vid video{position:absolute;inset:0;width:100%;height:100%;border:0}
 :root{--bg:#fffdf6;--sky:#e6f5fb;--sun:#ffd34d;--coral:#ff7a59;--leaf:#2f9e6b;--ink:#243342;--muted:#5d6b78;--line:#e3e8ee;--card:#ffffff;
 --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;--body:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;color-scheme:light}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.85}
@@ -167,47 +175,92 @@ def head(title, desc):
             f'<meta property="og:type" content="website"><meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(desc)}">'
             f'<meta property="og:image" content="{SITE}ogp.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="google-site-verification" content="2t_jYbV7BGn_y59pKTI4hIXxJJtO_QwigzLAIRFgzhE">'
             '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2230%22 fill=%22%23ffd34d%22/%3E%3Cellipse cx=%2232%22 cy=%2230%22 rx=%2218%22 ry=%2213%22 fill=%22%23fff%22/%3E%3Ccircle cx=%2225%22 cy=%2230%22 r=%223%22 fill=%22%23ff7a59%22/%3E%3Ccircle cx=%2232%22 cy=%2230%22 r=%223%22 fill=%22%23ff7a59%22/%3E%3Ccircle cx=%2239%22 cy=%2230%22 r=%223%22 fill=%22%23ff7a59%22/%3E%3C/svg%3E">'
-            '<link rel="stylesheet" href="style.css"></head><body>')
+            '<link rel="stylesheet" href="style.css">' + (f'<script data-goatcounter="https://{GC_CODE}.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>' if GC_CODE else '') + (f'<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon=\'{{"token": "{CF_TOKEN}"}}\'></script>' if CF_TOKEN else '') + '</head><body>')
+
+def video(src, title):
+    if not src:
+        return ""
+    if src.endswith(".mp4"):
+        inner = f'<video controls preload="metadata" playsinline src="{src}" title="{title}"></video>'
+    else:
+        inner = f'<iframe src="https://www.youtube-nocookie.com/embed/{src}" title="{title}" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>'
+    return f'<div class="vid">{inner}</div>'
+def welcome():
+    if not VIDEO_WELCOME:
+        return ""
+    return ('<section><div class="wrap"><h2>はじめまして、竹村です</h2><p class="sub">1分ほどの動画で、ごあいさつします。</p>'
+            + video(VIDEO_WELCOME, "竹村正太のごあいさつ") + '</div></section>')
+def sample():
+    if not VIDEO_SAMPLE:
+        return ""
+    return ('<section class="band"><div class="wrap"><h2>30分の相談は、こんな雰囲気です</h2><p class="sub">再現した様子です。実際の相談の録画ではありません。</p>'
+            + video(VIDEO_SAMPLE, "相談の雰囲気") + '</div></section>')
 
 def bar(cur):
     links = "".join(f'<a class="n{" on" if p["file"] == cur else ""}" href="{p["file"]}">{p["nav"]}</a>' for p in PAGES)
     return f'<div class="bar"><div class="wrap"><a class="brand" href="index.html">社外の専属キャリアコンサルタント</a>{links}</div></div>'
 
-FOOT = f'<footer><div class="wrap">担当：{NAME}（国家資格キャリアコンサルタント）</div></footer></body></html>'
+FOOT = f'<footer><div class="wrap">担当：{NAME}（国家資格キャリアコンサルタント）　<a href="unei.html">運営者情報・個人情報の取り扱い</a></div></footer></body></html>'
 
 SHARED = f"""
 <section><div class="wrap"><h2>使い方</h2><p class="sub">プランは1つです。使い方は会社ごとに決められます。</p>
 <div class="grid">{''.join(f'<div class="card"><h3>{t}</h3><p>{d}</p><p class="who">{w}</p></div>' for t, d, w in USAGE)}</div></div></section>
 @@COMIC@@
-<section><div class="wrap"><h2>仕組みと約束</h2><p class="sub">安心して話せることが、この制度の土台です。</p>
-<div class="pr"><div><b>独立</b><span>会社の指揮命令の外にいます</span></div><div><b>中立</b><span>会社と社員、どちらの側にも偏りません</span></div><div><b>守秘</b><span>本人の同意なく内容を伝えません</span></div><div><b>非公式</b><span>人事評価や記録とは切り離します</span></div></div>
+@@SAMPLE@@<section><div class="wrap"><h2>仕組みと約束</h2><p class="sub">安心して話せることが、この制度の土台です。</p>
+<div class="pr"><div><b>独立</b><span>会社の指揮命令の外にいます</span></div><div><b>中立</b><span>引き止めも、転職の勧めもしません。本人が納得して選ぶことを支えます</span></div><div><b>守秘</b><span>本人の同意なく内容を伝えません</span></div><div><b>非公式</b><span>人事評価や記録とは切り離します</span></div></div>
 <h3>社員の声が、会社に届くまで</h3>
 <ol class="steps"><li><span>30分の相談の最後の5分で、「会社に伝えておきたいことはありますか」と伺います。</span></li>
 <li><span>伝えたい内容だけを選び、個人が特定されにくい表現に整えます。AIによる確認も併用します。録音や録画はしません。</span></li>
 <li><span>整えた文面を一緒に読みます。本人が承認したものだけを、後から会社に届けます。</span></li>
 <li><span>会社の受け止めや対応を、次の機会に本人へお返しします。</span></li></ol>
-<p class="small" style="margin-top:16px">この窓口は医療機関ではありません。体調や心の不調が続くときは、産業医や医療機関など適切な相談先につなぎます。命や安全に関わる差し迫った状況では、本人を守るために必要な相手へ連絡することがあります。</p></div></section>
+<p class="small" style="margin-top:16px">この窓口は、会社が設けるハラスメントの相談窓口の代わりにはなりません。ハラスメントに関わる相談を受けたときは、会社の正式な窓口と社外の公的な相談先をご案内し、ご本人が望めば、会社に伝える手伝いをします。<br>この窓口は医療機関ではありません。体調や心の不調が続くときは、産業医や医療機関など適切な相談先につなぎます。命や安全に関わる差し迫った状況では、本人を守るために必要な相手へ連絡することがあります。</p></div></section>
+<section><div class="wrap"><h2>窓口担当の方も、支えます</h2><p class="sub">社員の相談を受ける人には、自分の相談先がないことが多いものです。困ったときに、いつでも話せる相手がいる。それだけで、仕事はずいぶん楽になります。コーチとして話を聴き、実務の手も貸します。</p>
+<div class="grid"><div class="card"><h3>チャットで、いつでも軽く相談</h3><p>「ちょっと聞きたい」は、チャットで送ってください。御社が使っているチャット（Slack、Chatwork、LINE WORKSなど）か、メールに合わせます。平日は原則、翌営業日までにお返事します。じっくり話したくなったら、その場で面談の予定を入れます。</p></div>
+<div class="card"><h3>月2回、担当の方の相談</h3><p>基本料に、月2回・各30分の相談を含みます。運用の確認は短く済ませ、残りは担当の方ご自身の相談に使えます。社員対応の整理、施策の壁打ち、ご自身のキャリアやモチベーションの相談まで扱います。</p></div>
+<div class="card"><h3>相談を受ける側の相談</h3><p>人事、研修担当、管理職の方が、社員や部下の相談を受けて迷ったときの相談です。月2回の枠を使えます。それを超える分は、社員と同じ1回30分5,000円で予約できます。</p></div>
+<div class="card"><h3>取り組みを形に残す</h3><p>3か月ごとに、社員と担当の方に3問だけの簡単なアンケートをとります（相談してよかったか、この窓口を続けてほしいか、など）。年に1度のふりかえりとあわせて、担当の方が社内で報告に使える1枚にまとめます。</p></div>
+<div class="card"><h3>研修づくりとAIの活用</h3><p>研修のワークは、決まったものを売り込むのではなく、担当の方や管理職の方と一緒に作ります。AIが苦手な方には、資料や案内づくりにAIを使う方法を、月2回の相談の中でお伝えします。</p></div>
+<div class="card"><h3>一人で人事を担う方に</h3><p>少人数の会社では、件数の報告は3か月ごとにまとめ、日付は書きません。その分、月2回の枠を担当の方の相談に厚く使います。</p></div></div>
+<p class="small" style="margin-top:14px">担当者は国家資格キャリアコンサルタントです。ビジネスコーチングとスポーツのコーチングを、いまも仕事として行っています。</p></div></section>
+<section class="band"><div class="wrap"><h2>会社の研修や制度に組み込む</h2><p class="sub">相談は、待っているだけでは使われにくいものです。会社の取り組みの一部として面談を組み込むと、節目ごとに確実に話す機会ができます。</p>
+<div class="tb"><table><tr><th>新入社員の最初の1年</th><td>入社1か月、3か月、6か月、1年の節目に30分ずつ。辞めたくなりやすい時期に、社外の相手と話す時間をつくります</td></tr>
+<tr><th>3年目研修に</th><td>研修の前後に1回ずつ。研修で考えたことを、ご自身のキャリアの言葉に整えます</td></tr>
+<tr><th>管理職の最初の半年</th><td>昇格後6か月のあいだ、月に1回。部下との面談の準備や、新しい役割の悩みを相談できます。いちばん孤立しやすい時期を支えます</td></tr>
+<tr><th>会社の取り組みに</th><td>評価制度の見直し、異動や配置換え、組織の再編など、会社が進める取り組みに、対象者との面談を付けます</td></tr></table></div>
+<p class="small" style="margin-top:12px">料金は通常と同じ1回30分5,000円です。対象者と回数を先に決めて、予約枠をまとめて確保します。助成金の対象になるかどうかは、社会保険労務士にご確認ください。</p></div></section>
+<section><div class="wrap"><h2>AIが苦手でも、大丈夫です</h2><p class="sub">一人で人事を担っていると、「AIを使えば楽になると聞くけれど、何から始めればいいか分からない」ということがよくあります。担当者はキャリアコンサルタントであり、AIで道具を作ることも仕事にしています。</p>
+<div class="grid"><div class="card"><h3>このサイトの道具も、AIで作りました</h3><p><a href="annai.html">社員向けの案内チラシ</a>、<a href="teian.html">上司に見せる1枚</a>、<a href="mitsumori.html">費用の試算</a>、<a href="shindan.html">3分診断</a>。同じような道具を、御社に合わせて作れます。</p></div>
+<div class="card"><h3>たとえば、こんなものが作れます</h3><p>求人票の下書き、新入社員向けの「最初の1か月ガイド」、1on1や面談の記録シート、社内アンケートの作成と集計、研修の資料。</p></div>
+<div class="card"><h3>使い方から、お伝えします</h3><p>作り方を覚えたい方には、月2回の相談の中で一緒に手を動かします。作成までまるごと任せたい場合は、事前にお見積もりします。</p></div></div></div></section>
 <section class="band"><div class="wrap"><h2>料金と流れ</h2><p class="sub">金額は税別です。</p>
 <div class="tb"><table><tr><th>月額基本料</th><td>15,000円（従業員100名まで一律）</td></tr>
-<tr><th>基本料に含むもの</th><td>社員専用の予約ページ、社員向けの案内ページと配布用チラシ、会社へ声を届ける仕組み、窓口担当の方との月に1度の定例（30分）、求人や自社サイトでの表記</td></tr>
+<tr><th>基本料に含むもの</th><td>社員専用の予約ページ、社員向けの案内ページと配布用チラシ、会社へ声を届ける仕組み、窓口担当の方の相談 月2回（各30分。運用の確認もこの中で行います）、求人や自社サイトでの表記</td></tr>
 <tr><th>個別相談</th><td>1回30分 5,000円。使った分だけ。どなたが使っても同額</td></tr>
+<tr><th>窓口担当の方の相談</th><td>チャットでの相談はいつでも（平日は原則、翌営業日までに返信）。面談は月2回（各30分）まで基本料に含みます。それを超える分は、社員と同じ1回30分5,000円です</td></tr>
+<tr><th>研修や制度への組み込み</th><td>1回30分5,000円。対象者と回数を先に決めて予約枠を確保します</td></tr>
 <tr><th>利用の上限</th><td>1人あたり月2回まで。会社ごとに月の上限件数を決められます</td></tr>
 <tr><th>契約</th><td>12か月の自動更新。最初の3か月はいつでも解約できます</td></tr><tr><th>いまの価格</th><td>月額15,000円は、先着3社までの価格です。この価格でご契約いただいた会社は、継続しているあいだ、更新後も据え置きます</td></tr><tr><th>ご紹介の特典</th><td>ご紹介で新しい契約が決まると、紹介した会社とされた会社の両方の基本料を1か月分無料にします。年払いの会社には、代わりに相談3回分を無料にします</td></tr></table></div>
 <h3 style="margin-top:26px">申込みから利用開始まで</h3>
 <ol class="steps"><li><span>30分のオンライン説明。御社の状況を伺います。</span></li><li><span>申込フォームと電子契約。</span></li>
 <li><span>案内ページのURLか、印刷した案内チラシを社員の方に配ります。説明会は不要です。</span></li><li><span>社員の方が直接予約し、相談が始まります。</span></li></ol></div></section>
 <section><div class="wrap"><h2>よくある質問</h2><div style="margin-top:18px">
-<details><summary>誰が相談したか、会社に分かりますか。</summary><p>分かりません。社員の方は会社を通さずに予約します。会社には月の件数だけを報告します。</p></details>
-<details><summary>利用が少なかったら、もったいなくありませんか。</summary><p>相談の費用は使った分だけです。月に1度の定例は、窓口担当の方ご自身の相談に使えます。利用が少ない月は、社員の方への再案内文をこちらで用意します。</p></details>
+<details><summary>誰が相談したか、会社に分かりますか。</summary><p>分かりません。社員の方は会社を通さずに予約します。会社には月の件数だけを報告します。従業員20名未満の会社では、件数から推測されないよう、3か月ごとにまとめて日付なしで報告します。</p></details>
+<details><summary>「専属」とは、御社だけを担当するという意味ですか。</summary><p>いいえ。御社の担当者が固定され、毎回同じ人が対応するという意味です。担当者はほかの会社も担当しています。御社の事情を知っている同じ人に、続けて相談できます。</p></details>
+<details><summary>社員から転職や退職の相談があったら、どうしますか。</summary><p>そうした相談も受けます。引き止めも転職の勧めもせず、ご本人が納得して選べるよう整理を手伝います。相談の内容は、本人の同意なく会社に伝えません。</p></details>
+<details><summary>ハラスメントの相談を受けたら、どうしますか。</summary><p>この窓口は、会社が設けるハラスメントの相談窓口の代わりにはなりません。会社の正式な窓口と社外の公的な相談先をご案内し、ご本人が望めば、会社に伝える手伝いをします。</p></details>
+<details><summary>チャットでの相談は、誰が使えますか。</summary><p>窓口担当の方（人事・研修担当・管理職など、導入時に決めた方）です。社員の方の相談は、秘密を守るため、予約した面談で伺います。チャットに社員の名前や個人的な事情は書かないでください。</p></details>
+<details><summary>外国籍の社員も相談できますか。</summary><p>できます。やさしい日本語と、簡単な英語で対応します（英語は日常会話の水準です）。仕事のこと、日本での働き方や暮らしとの両立など、言葉にしにくいことも、ゆっくり伺います。</p></details>
+<details><summary>新人研修などに組み込めますか。</summary><p>できます。新人研修、3年目研修、管理職への昇格、会社の取り組みなどに合わせて、対象者と回数を決めて面談を組み込みます。料金は通常と同じです。</p></details>
+<details><summary>利用が少なかったら、もったいなくありませんか。</summary><p>相談の費用は使った分だけです。月2回の担当者相談は、窓口担当の方ご自身の相談に使えます。導入から1か月たったころと、利用が少ない月には、社員の方への再案内文をこちらで用意します。</p></details>
 <details><summary>知り合いの会社を紹介すると、特典はありますか。</summary><p>あります。紹介した会社が契約に至ると、紹介した会社とされた会社の両方の基本料を1か月分無料にします。年払いの会社には、代わりに相談3回分（15,000円分）を無料にします。紹介は、窓口担当の方から一言お知らせいただくだけで結構です。</p></details>
 <details><summary>どんな相談でも受けますか。</summary><p>仕事、職場の人間関係、これからのキャリア、働き方と生活の両立、目標づくりなどを扱います。診断や治療が必要な心身の不調、法律や労務の手続きは扱わず、適切な相談先をご案内します。</p></details>
 <details><summary>個人で運営していて、守秘は大丈夫ですか。</summary><p>相談の内容を知っているのは担当者一人だけです。録音や録画はせず、手書きのメモはほかの人が見られない形で保管します。守秘の取り決めは、契約書にも明記します。</p></details>
 <details><summary>相談にAIを使いますか。</summary><p>相談そのものは、担当者が直接お聴きします。会社に届ける文面を整えるときに、AIを補助として使うことがあります。その場合はご本人に先にお伝えし、お名前など個人が分かる情報は入力しません。</p></details>
-<details><summary>費用に見合う効果はありますか。</summary><p>効果は会社ごとに異なるため、数字でお約束はしていません。その代わり、最初の3か月はいつでも解約できるようにしています。月に1度の定例で、利用の様子と届いた声を一緒に確かめながら、続けるかどうかを判断していただけます。</p></details>
-<details><summary>担当が不在のときはどうなりますか。</summary><p>病気や事故などで1か月を通じて実施できなかった場合、その月の基本料はいただきません。</p></details>
+<details><summary>費用に見合う効果はありますか。</summary><p>効果は会社ごとに異なるため、数字でお約束はしていません。その代わり、最初の3か月はいつでも解約できるようにしています。月2回の担当者相談の中で、利用の様子と届いた声を一緒に確かめながら、続けるかどうかを判断していただけます。</p></details>
+<details><summary>担当が不在のときはどうなりますか。</summary><p>病気や事故などで1か月を通じて実施できなかった場合、その月の基本料はいただきません。2か月以上続けて実施できない場合は、会社はいつでも解約できます。</p></details>
 <details><summary>産業医や既存の相談窓口と重なりませんか。</summary><p>こちらは仕事とキャリアの相談、前向きなコーチングを扱います。不調が疑われる場合は、産業医や医療機関につなぎます。</p></details>
 </div></div></section>
-<section><div class="wrap"><h2>担当者</h2><div class="prof"><img src="takemura.jpg" alt="{NAME}の写真" width="260" height="290"><div><p class="pn">{NAME}<span>たけむら しょうた</span></p><p>国家資格キャリアコンサルタント。キャリア相談、コーチング、不登校の若者支援に携わってきました。</p><p>相談する方の話を聴くことと、相談を受ける方を支えることの両方を仕事にしています。御社の専属として、毎回同じ担当者がお話を伺います。</p></div></div></div></section>
+<section><div class="wrap"><h2>担当者</h2><div class="prof"><img src="takemura.jpg" alt="{NAME}の写真" width="260" height="290"><div><p class="pn">{NAME}<span>たけむら しょうた</span></p><p>国家資格キャリアコンサルタント。キャリア相談、不登校の若者支援に携わってきました。ビジネスコーチングとスポーツのコーチングも、いまも仕事として続けています。</p><p>相談する方の話を聴くことと、相談を受ける方を支えることの両方を仕事にしています。御社の専属として、毎回同じ担当者がお話を伺います（ほかの会社も担当しています）。</p><p><a href="unei.html">運営者情報を見る</a></p></div></div></div></section>
 @@JUNBI@@
 """
 
@@ -221,11 +274,11 @@ EXTRA = {
  "keieisha.html": dict(ctitle="たとえば、社員の退職が続いた会社の場合",
    worry=["辞めると決まってから、初めて理由を知る。", "幹部にも家族にも言いにくい悩みがある。", "社員が何を感じているか、数字だけでは分からない。"],
    comic=[([(Y, K2)], "また一人、辞めると言われた。理由は最後まで分からなかった。"), ([(Y, K2)], "社外の相談窓口を置いてみる。やることは案内を配るだけ。"),
-          ([(Y, K2), (G, K3)], "月に1度の定例。社員から届いた声を、匿名で受け取る。"), ([(Y, K2), (G, K3)], "打てる手が見えてくる。自分の悩みも、ここで話せる。")]),
+          ([(Y, K2), (G, K3)], "月2回の相談の時間。社員から届いた声を、匿名で受け取る。"), ([(Y, K2), (G, K3)], "打てる手が見えてくる。自分の悩みも、ここで話せる。")]),
  "jinji.html": dict(ctitle="たとえば、人事を一人で担っている方の場合",
    worry=["社員の相談を受けても、自分が相談できる人がいない。", "新しい制度を入れたいが、準備の時間がない。", "上司に提案したいが、説明の材料がない。"],
    comic=[([(G, K1)], "社員の相談、採用、労務。全部ひとりで受けている。"), ([(G, K1), (Y, K2)], "提案資料を1枚、上司に見せる。「月15,000円からです」"),
-          ([(G, K1)], "案内チラシを印刷して配る。準備はそれだけ。"), ([(G, K1), (B, K3)], "相談は社外へ。自分にも、月に1度の相談相手ができた。")]),
+          ([(G, K1)], "案内チラシを印刷して配る。準備はそれだけ。"), ([(G, K1), (B, K3)], "相談は社外へ。自分にも、月2回話せる相談相手ができた。")]),
  "saiyo.html": dict(ctitle="たとえば、求人で違いを出したい会社の場合",
    worry=["求人票で、他社との違いを出しにくい。", "内定者から、入社後の不安を聞かれる。", "入社後のフォローまで、手が回らない。"],
    comic=[([(R, K1)], "求人票。どの会社も、似たことを書いている。"), ([(R, K1)], "「社外のキャリアコンサルタントに相談できます」と書き足す。"),
@@ -253,13 +306,13 @@ def junbi():
     if not (FORM_MOSHIKOMI or FORM_SHIRYO):
         return '<section class="band" id="junbi"><div class="wrap"><h2>お問い合わせ</h2><p class="sub">各フォームは準備中です。</p></div></section>'
     b = []
-    if FORM_SHIRYO: b.append(f'<a class="btn" href="{FORM_SHIRYO}">資料の受け取り・30分の説明</a>')
+    if FORM_SHIRYO: b.append(f'<a class="btn" href="{FORM_SHIRYO}">まずは話を聞いてみる（30分・無料）</a>')
     if FORM_MOSHIKOMI: b.append(f'<a class="btn sub" href="{FORM_MOSHIKOMI}">導入を申し込む</a>')
     if FORM_SUISEN: b.append(f'<a class="btn sub" href="{FORM_SUISEN}">自分の会社に導入してほしい方</a>')
     return ('<section class="band" id="junbi"><div class="wrap"><h2>お問い合わせ</h2>'
-            '<p class="sub">資料の受け取りや30分の説明は、無料です。こちらから営業のお電話をすることはありません。</p>'
+            '<p class="sub">「少し話を聞いてみたい」くらいで大丈夫です。30分の説明と資料のお渡しは無料で、その場で担当の方ご自身のお悩みも伺います。こちらから営業のお電話をすることはありません。</p>'
             f'<div class="cta">{"".join(b)}</div></div></section>')
-SHARED = SHARED.replace("@@JUNBI@@", junbi())
+SHARED = SHARED.replace("@@JUNBI@@", junbi()).replace("@@SAMPLE@@", sample())
 
 def page(p):
     pts = "".join(f'<div class="card p{i+1}"><h3>{t}</h3><p>{d}</p></div>' for i, (t, d) in enumerate(p["points"]))
@@ -269,7 +322,7 @@ def page(p):
             f'<header class="hero"><div class="wrap"><div><p class="tag">{p["name"]}</p><h1>{p["h1"]}</h1><p class="lead">{p["lead"]}</p>'
             f'<div class="price"><span>月額基本料 <b>15,000円</b></span><span>相談1回30分 <b>5,000円</b></span><span>最初の3か月は解約自由</span></div>'
             f'<div class="cta">{cta}</div></div><div>{hero_svg(*p["c"])}</div></div></header>'
-            + worry(p) + f'<section><div class="wrap"><div class="grid">{pts}</div></div></section>' + SHARED.replace('@@COMIC@@', comic(p)) +
+            + welcome() + worry(p) + f'<section><div class="wrap"><div class="grid">{pts}</div></div></section>' + SHARED.replace('@@COMIC@@', comic(p)) +
             f'<section><div class="wrap"><h2>ほかの立場の方へ</h2><div class="others" style="margin-top:18px">{others}</div></div></section>' + nayami_links() + FOOT)
 
 TOOLJS = """<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
@@ -304,8 +357,8 @@ TEIAN = (head("社外キャリア相談制度 導入のご提案", "上司や経
  '<div class="sheet"><p class="co"><span class="co-name"></span> 御中</p><h1>社外キャリア相談制度 導入のご提案</h1>'
  '<p><b>提案の要点：</b>月額15,000円で、社員が社外の国家資格キャリアコンサルタントに相談できる制度を導入します。</p>'
  '<h3>なぜ必要か</h3><ul style="margin:6px 0 14px;padding-left:1.2em"><li>辞めると決める前に、社員が本音を話せる相手が社内にいない。</li><li>管理職が部下の相談を一人で抱えている。</li><li>求人で「人を大切にする会社」だと具体的に示せる材料が少ない。</li></ul>'
- '<h3>費用</h3><div class="tb"><table><tr><th>月額基本料</th><td>15,000円（年額18万円）。窓口担当者との月に1度の定例30分を含む</td></tr><tr><th>個別相談</th><td>1回30分5,000円。使った分だけ。月の上限件数を決められる</td></tr><tr><th>先着価格</th><td>月額15,000円は先着3社までの価格。契約を続けるあいだは更新後も据え置き</td></tr><tr><th>初期費用・解約</th><td>初期費用なし。最初の3か月はいつでも解約できる</td></tr></table></div>'
- '<h3 style="margin-top:16px">社内の手間</h3><ul style="margin:6px 0 14px;padding-left:1.2em"><li>導入時は、案内ページのURLか印刷した案内チラシを社員に配るだけ。説明会は不要。</li><li>予約は社員が直接行う。窓口担当者の作業は月に1度の定例30分のみ。</li></ul>'
+ '<h3>費用</h3><div class="tb"><table><tr><th>月額基本料</th><td>15,000円（年額18万円）。窓口担当者のチャット相談（随時）と面談 月2回（各30分）を含む</td></tr><tr><th>個別相談</th><td>1回30分5,000円。使った分だけ。月の上限件数を決められる</td></tr><tr><th>先着価格</th><td>月額15,000円は先着3社までの価格。契約を続けるあいだは更新後も据え置き</td></tr><tr><th>初期費用・解約</th><td>初期費用なし。最初の3か月はいつでも解約できる</td></tr></table></div>'
+ '<h3 style="margin-top:16px">社内の手間</h3><ul style="margin:6px 0 14px;padding-left:1.2em"><li>導入時は、案内ページのURLか印刷した案内チラシを社員に配るだけ。説明会は不要。</li><li>予約は社員が直接行う。窓口担当者の作業は月2回の相談（各30分）のみ。</li></ul>'
  '<h3>心配への答え</h3><ul style="margin:6px 0 14px;padding-left:1.2em"><li>相談内容は会社に伝わらない。会社に届くのは件数と、本人が望んだ声だけ。</li><li>不調が疑われる場合は、産業医や医療機関につなぐ。</li><li>使い方は会社で決められる（入社後フォロー面談、前向きなコーチング、管理職の面談準備など）。</li></ul>'
  f'<p class="small">金額は税別。担当：{NAME}（国家資格キャリアコンサルタント）</p></div>' + TOOLJS + FOOT)
 
@@ -326,12 +379,12 @@ NAYAMI = [
             ("社外の相談相手にできること", "面談の前に、何を聞き、何を伝え、何を言わないかを一緒に整理できます。終わったあとには、うまくいった点と次に変える点をふりかえれます。"),
             ("この制度での使い方", "管理職の方も、社員と同じ30分の相談を使えます。部下の相談そのものを社外に任せることもできるので、管理職が一人で受け止める量が減ります。")]),
  dict(file="keieisha-sodan.html", nav="経営者に相談相手がいない", to="keieisha.html", tolabel="経営者の方へ",
-      desc="社内にも家族にも話しにくい経営者の悩みを、利害のない社外の相手に話す月1回30分。社員の相談窓口とあわせて月額15,000円。",
+      desc="社内にも家族にも話しにくい経営者の悩みを、利害のない社外の相手に話す月2回の30分。社員の相談窓口とあわせて月額15,000円。",
       h1="経営者には、相談相手がいない。",
-      lead="社員には言えない。家族には心配をかけたくない。取引先には弱みを見せられない。月に1度、利害のない相手に話す時間を持てます。",
+      lead="社員には言えない。家族には心配をかけたくない。取引先には弱みを見せられない。月に2回まで、利害のない相手に話す時間を持てます。",
       secs=[("なぜ相談しにくいのか", "経営者の言葉は、社内では決定として受け取られます。迷っている段階の話を、迷っているまま話せる相手が必要です。"),
             ("社外の相談相手にできること", "答えを出すのは経営者ご自身です。こちらは、考えを言葉にする手伝いをします。人と組織の悩みは、キャリアコンサルティングとコーチングの専門領域です。"),
-            ("この制度での使い方", "基本料に含まれる月に1度の定例30分を、ご自身の壁打ちに使えます。同じ場で、社員から届いた声も匿名で受け取れます。")]),
+            ("この制度での使い方", "基本料に含まれる月2回・各30分の相談を、ご自身の壁打ちに使えます。同じ場で、社員から届いた声も匿名で受け取れます。")]),
  dict(file="sodan-kawaranai.html", nav="相談しても変わらないと思われている", to="jinji.html", tolabel="人事・総務の方へ",
       desc="相談窓口を置いても使われない、相談しても変わらないと思われている職場へ。社員の声が会社に届き、返事が戻る仕組み。",
       h1="「相談しても、どうせ変わらない」",
@@ -383,7 +436,7 @@ GYOSHU = [
       lead="就労支援、フリースクール、学校。誰かの相談を受けることが仕事の職場では、職員自身の悩みは後回しになりがちです。相談を受ける人のための相談先を置けます。",
       secs=[("この職場で起きやすいこと", "利用者や生徒への対応に正解がなく、一人で抱え込む。職員の数が少なく、ケースについて落ち着いて振り返る時間が取れない。熱心な人ほど疲れてしまいます。"),
             ("社外の相談相手にできること", "キャリア相談、コーチング、不登校支援の現場で相談を受けてきた立場から、対応の振り返りと、職員自身の働き方の相談の両方を受けます。"),
-            ("この制度での使い方", "職員の個別相談に加えて、月に1度の定例を、ケースの振り返りやチームの悩みの相談に使えます。")]),
+            ("この制度での使い方", "職員の個別相談に加えて、月2回の担当者相談を、ケースの振り返りやチームの悩みの相談に使えます。")]),
 ]
 NAYAMI = NAYAMI + GYOSHU
 
@@ -454,9 +507,49 @@ MITSUMORI = (head("費用の試算と提案ページ", "会社名、従業員数
  '[c,n,h].forEach(function(e){e.addEventListener("input",d);});d();'
  'document.getElementById("m-print").addEventListener("click",function(){try{window.print();}catch(e){}});})();</script>' + FOOT)
 
+UNEI = (head("運営者情報・個人情報の取り扱い", "社外の専属キャリアコンサルタントの運営者情報と、個人情報の取り扱いについて。") + bar("") +
+ '<header class="hero"><div class="wrap" style="display:block"><p class="tag">運営者情報</p><h1>運営者情報・個人情報の取り扱い</h1></div></header>'
+ '<section><div class="wrap"><h2>運営者</h2><div class="tb"><table>'
+ + (f'<tr><th>屋号</th><td>{YAGO}</td></tr>' if YAGO else '') +
+ f'<tr><th>運営・担当</th><td>{NAME}（たけむら しょうた）</td></tr><tr><th>資格</th><td>国家資格キャリアコンサルタント' + (f'（登録番号 {REG_NO}）' if REG_NO else '') + '</td></tr>'
+ '<tr><th>拠点</th><td>東京都・三重県（ご相談はすべてオンラインです）</td></tr>'
+ '<tr><th>提供するもの</th><td>会社と契約する社外のキャリア相談・コーチング</td></tr>'
+ f'<tr><th>お問い合わせ</th><td><a href="{FORM_SHIRYO}">お問い合わせフォーム</a>からお送りください。2営業日以内にお返事します。</td></tr></table></div></div></section>'
+ '<section class="band"><div class="wrap"><h2>個人情報の取り扱い</h2>'
+ '<ol class="steps"><li><span>お預かりする情報は、お名前、会社名、連絡先、予約の日時、相談の際の手書きのメモです。</span></li>'
+ '<li><span>使う目的は、相談の実施、予約や請求の連絡、ご本人が承認した声を会社に届けることに限ります。</span></li>'
+ '<li><span>相談の内容は、ご本人の同意なく、会社を含む第三者に伝えません。ただし、命や安全に関わる差し迫った状況では、本人を守るために必要な相手へ連絡することがあります。</span></li>'
+ '<li><span>録音や録画はしません。手書きのメモは、ほかの人が見られない形で保管し、契約の終了後に廃棄します。</span></li>'
+ '<li><span>会社に届ける文面を整えるときにAIを補助として使うことがあります。その場合はお名前など個人が分かる情報を入力しません。</span></li>'
+ '<li><span>予約にはTimeRex、ビデオ通話にはZoom、お問い合わせにはGoogleフォームを使います。</span></li>'
+ + ('<li><span>サイトの改善のため、Cloudflare Web Analyticsで訪問数を計測しています。Cookieは使わず、個人を特定する情報は集めません。</span></li>' if CF_TOKEN else '') + '<li><span>ご自身の情報の確認や削除を希望される場合は、お問い合わせフォームからご連絡ください。</span></li></ol></div></section>' + FOOT)
+
+SHAROUSHI = (head("社会保険労務士の先生へ｜顧問先の社員面談をお手伝いします", "顧問先の社員のキャリア相談・面談を、国家資格キャリアコンサルタントがオンラインで引き受けます。手続きと制度は先生に、面談は担当者に、という分担です。") + bar("") +
+ '<header class="hero"><div class="wrap" style="display:block"><p class="tag">社会保険労務士の先生へ</p><h1>顧問先の社員面談を、お手伝いします</h1>'
+ '<p class="lead">手続きと制度づくりは先生に。社員一人ひとりとの面談は、社外のキャリアコンサルタントに。顧問先に「社外の相談窓口」を、先生のご紹介で用意できます。</p></div></header>'
+ '<section><div class="wrap"><h2>こんなときに</h2><ul class="worry">'
+ '<li>顧問先から「社員の定着」や「若手の離職」の相談を受けるが、一人ひとりの面談までは手が回らない。</li>'
+ '<li>キャリアコンサルティングが要件になる取り組みで、面談の担い手を探している。</li>'
+ '<li>社員の不満が、労務の問題になる前に拾える仕組みを、顧問先に勧めたい。</li></ul></div></section>'
+ '<section class="band"><div class="wrap"><h2>分担のかたち</h2><div class="tb"><table>'
+ '<tr><th>先生</th><td>就業規則、制度づくり、手続き、助成金の申請</td></tr>'
+ '<tr><th>担当者（竹村）</th><td>社員との個別面談（オンライン・1回30分）、窓口担当の方の相談、本人が承認した声の匿名での受け渡し</td></tr>'
+ '<tr><th>顧問先</th><td>案内チラシを社員に配るだけ。説明会は不要です</td></tr></table></div>'
+ '<p class="small" style="margin-top:12px">面談で労務や制度の課題が見えたときは、本人の同意の範囲で顧問先に伝え、手続きや制度のことは先生にご相談いただくよう案内します。労務の相談や手続きを、こちらで扱うことはありません。</p></div></section>'
+ '<section><div class="wrap"><h2>先生にとっての利点</h2><div class="grid">'
+ '<div class="card"><h3>顧問サービスの厚みが増す</h3><p>「社外の相談窓口も紹介できる」ことを、先生の提案の一つにしていただけます。</p></div>'
+ '<div class="card"><h3>問題の芽を早く知れる</h3><p>辞める前、揉める前の声が、匿名で会社に届きます。制度の見直しのきっかけになります。</p></div>'
+ '<div class="card"><h3>手間は増えません</h3><p>契約と運営は、顧問先とこちらで直接行います。先生に事務の負担はかかりません。</p></div></div>'
+ '<p class="small" style="margin-top:14px">ご紹介への謝礼のやりとりは行いません。ご紹介いただいた顧問先には、基本料1か月分を無料にします。</p></div></section>'
+ '<section class="band"><div class="wrap"><h2>料金（顧問先のご負担）</h2><div class="tb"><table>'
+ '<tr><th>月額基本料</th><td>15,000円（先着3社の価格。窓口担当の方の相談 月2回を含む）</td></tr><tr><th>個別相談</th><td>1回30分 5,000円。使った分だけ</td></tr>'
+ '<tr><th>契約</th><td>12か月の自動更新。最初の3か月はいつでも解約できます</td></tr></table></div>'
+ '<div class="cta"><a class="btn" href="index.html">サービスの全体を見る</a>'
+ f'<a class="btn sub" href="{FORM_SHIRYO}">15分、話を聞いてみる</a></div></div></section>' + FOOT)
+
 def more_pages():
     out = {n["file"]: nayami_page(n) for n in NAYAMI}
-    out.update({"shindan.html": SHINDAN, "mitsumori.html": MITSUMORI})
+    out.update({"shindan.html": SHINDAN, "mitsumori.html": MITSUMORI, "unei.html": UNEI, "sharoushi.html": SHAROUSHI})
     return out
 
 
