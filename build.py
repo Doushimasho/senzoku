@@ -111,6 +111,8 @@ PAGES = [
 ]
 
 CSS = """
+.grid.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))}
+.mihon{background:#fff;border:1px solid #e6e1d8;border-radius:12px;padding:14px 16px;white-space:pre-wrap;font-size:14px;line-height:1.85;margin-top:10px}.mcard .small{margin:4px 0 0}
 .vid{position:relative;max-width:760px;aspect-ratio:16/9;margin-top:16px;border-radius:16px;overflow:hidden;background:#000}.vid iframe,.vid video{position:absolute;inset:0;width:100%;height:100%;border:0}
 :root{--bg:#fffdf6;--sky:#e6f5fb;--sun:#ffd34d;--coral:#ff7a59;--leaf:#2f9e6b;--ink:#243342;--muted:#5d6b78;--line:#e3e8ee;--card:#ffffff;
 --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;--body:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;color-scheme:light}
@@ -198,6 +200,7 @@ def sample():
 
 def bar(cur):
     links = "".join(f'<a class="n{" on" if p["file"] == cur else ""}" href="{p["file"]}">{p["nav"]}</a>' for p in PAGES)
+    links += f'<a class="n{" on" if cur == "mihon.html" else ""}" href="mihon.html">AIで作れるもの</a>'
     return f'<div class="bar"><div class="wrap"><a class="brand" href="index.html">社外の専属キャリアコンサルタント</a>{links}</div></div>'
 
 FOOT = f'<footer><div class="wrap">担当：{NAME}（国家資格キャリアコンサルタント）　<a href="unei.html">運営者情報・個人情報の取り扱い</a></div></footer></body></html>'
@@ -229,7 +232,7 @@ SHARED = f"""
 <tr><th>会社の取り組みに</th><td>評価制度の見直し、異動や配置換え、組織の再編など、会社が進める取り組みに、対象者との面談を付けます</td></tr></table></div>
 <p class="small" style="margin-top:12px">料金は通常と同じ1回30分5,000円です。対象者と回数を先に決めて、予約枠をまとめて確保します。助成金の対象になるかどうかは、社会保険労務士にご確認ください。</p></div></section>
 <section><div class="wrap"><h2>AIが苦手でも、大丈夫です</h2><p class="sub">一人で人事を担っていると、「AIを使えば楽になると聞くけれど、何から始めればいいか分からない」ということがよくあります。担当者はキャリアコンサルタントであり、AIで道具を作ることも仕事にしています。</p>
-<div class="grid"><div class="card"><h3>このサイトの道具も、AIで作りました</h3><p><a href="annai.html">社員向けの案内チラシ</a>、<a href="teian.html">上司に見せる1枚</a>、<a href="mitsumori.html">費用の試算</a>、<a href="shindan.html">3分診断</a>。同じような道具を、御社に合わせて作れます。</p></div>
+<div class="grid"><div class="card"><h3>このサイトの道具も、AIで作りました</h3><p><a href="annai.html">社員向けの案内チラシ</a>、<a href="teian.html">上司に見せる1枚</a>、<a href="mitsumori.html">費用の試算</a>、<a href="shindan.html">3分診断</a>。同じような道具を、御社に合わせて作れます。</p><p><a href="mihon.html">AIで作った見本を見る</a></p></div>
 <div class="card"><h3>たとえば、こんなものが作れます</h3><p>求人票の下書き、新入社員向けの「最初の1か月ガイド」、1on1や面談の記録シート、社内アンケートの作成と集計、研修の資料。</p></div>
 <div class="card"><h3>使い方から、お伝えします</h3><p>作り方を覚えたい方には、月2回の相談の中で一緒に手を動かします。作成までまるごと任せたい場合は、事前にお見積もりします。</p></div></div></div></section>
 <section class="band"><div class="wrap"><h2>料金と流れ</h2><p class="sub">金額は税別です。</p>
@@ -547,9 +550,136 @@ SHAROUSHI = (head("社会保険労務士の先生へ｜顧問先の社員面談�
  '<div class="cta"><a class="btn" href="index.html">サービスの全体を見る</a>'
  f'<a class="btn sub" href="{FORM_SHIRYO}">15分、話を聞いてみる</a></div></div></section>' + FOOT)
 
+MIHON_ITEMS = [
+ ("社員向けの案内", "01_社員向け案内", "5分",
+  "社外の相談窓口ができたことを、全社員に知らせる案内文。",
+  """【社外の相談窓口ができました】
+
+仕事のこと、これからのこと、人間関係のこと。
+社内の人には少し話しにくいことを、社外のキャリアコンサルタントに相談できるようになりました。
+
+・1回30分、オンラインで話せます
+・誰が相談したかは、会社にはわかりません
+・予約は、下のQRコードから自分でできます
+
+「こんなことで相談していいのかな」と思うくらいのことで大丈夫です。
+困ったとき、迷ったときの選択肢の一つとして、覚えておいてください。
+
+問い合わせ：総務部　〇〇"""),
+ ("求人票の、最初の一文", "02_求人票の下書き", "10分",
+  "製造スタッフの求人票の冒頭に置く一文を3案。",
+  """案1　「覚えるまで、何度聞いても大丈夫です。」
+　　　未経験の方が最初に気にすることに、まっすぐ答える一文。
+
+案2　「毎朝、できたての匂いの中で働けます。」
+　　　仕事の手ざわりが伝わる一文。食品の製造ならでは。
+
+案3　「35人の会社なので、全員の顔と名前がわかります。」
+　　　小さな会社の良さを、そのまま強みにする一文。"""),
+ ("やさしい日本語への言い換え", "08_やさしい日本語への言い換え", "5分",
+  "健康診断のお知らせを、外国籍の社員にも伝わる形に。",
+  """【元の文】
+定期健康診断を下記の日程で実施いたしますので、対象者は所定の問診票に記入の上、当日持参してください。前日21時以降の飲食は控えてください。
+
+【やさしい日本語】
+けんこうしんだん（体（からだ）のチェック）があります。
+
+・日（ひ）：12月3日（水）
+・時間（じかん）：9時（じ）から
+・場所（ばしょ）：2階（かい）の会議室（かいぎしつ）
+・持（も）って来（く）るもの：問診票（もんしんひょう）※紙（かみ）に書（か）いて持って来てください
+
+前（まえ）の日（ひ）の夜（よる）9時から、食（た）べたり飲（の）んだりしないでください。水（みず）は飲んでもいいです。
+
+※「水は飲んでもいい」は、健診の実施機関に確認してから載せます。"""),
+ ("新入社員の最初の1か月ガイド", "03_新入社員の最初の1か月ガイド", "10分",
+  "入社した人に渡すガイドの目次と、一部の抜粋。",
+  """【目次】
+1. ようこそ、みどり台フーズへ
+2. 最初の1週間の予定
+3. 1か月でできるようになること
+4. 困ったときは
+5. よくある質問
+
+【「4. 困ったときは」より】
+分からないことを聞くのは、仕事の一部です。
+同じことを2回聞いても、3回聞いても大丈夫です。
+
+・仕事の手順のこと → 教育係の先輩（　　　　）
+・体調や勤務時間のこと → 上司（　　　　）
+・会社の人には話しにくいこと → 社外の相談窓口（予約はQRコードから）"""),
+ ("管理職の、最初の1on1", "10_管理職の最初の1on1準備", "10分",
+  "管理職になったばかりの人が、部下との最初の1on1で使う言い方と質問。",
+  """【この時間の目的の伝え方（3案）】
+・「評価の時間ではなくて、困っていることを一緒に片づける時間にしたいと思っています」
+・「私もこの役割は初めてなので、どうしたら働きやすいか教えてほしいです」
+・「月に1回、30分だけ。話したいことがない日は、早く終わってもいいです」
+
+【話しやすくなる質問（一部）】
+・最近の仕事で、うまくいったことは何ですか
+・やりにくいと感じていることはありますか
+・私にしてほしいこと、やめてほしいことはありますか"""),
+ ("退職の申し出を受けたときの準備", "09_退職の申し出を受けたときの準備", "10分",
+  "部下から「辞めたい」と言われた上司が、次の面談の前に読むメモ。",
+  """【面談の目的】
+本人の考えを正確に聴き、会社としてできることとできないことを整理する。
+
+【聴くための質問（一部）】
+・そう考えるようになったのは、いつごろからですか
+・いちばん大きな理由を一つ挙げるとしたら、何ですか
+・もし何かが変わるとしたら、考えは変わりそうですか
+
+【言わないほうがよい言葉】
+・「今辞めたら、どこに行っても通用しないよ」（脅しに聞こえる）
+・「みんな我慢しているんだから」（本人の話を聴いていない、と受け取られる）
+
+※手続きや法律に関わることは、社労士に確認します。"""),
+ ("上司に見せる提案メモ", "07_上司への提案メモ", "10分",
+  "社外の相談窓口を入れたい担当者が、社長に見せる1枚の骨子。",
+  """【結論】社外の相談窓口を、3か月だけ試したいです。
+
+【今の課題】この1年で、入社3年以内の社員が4人辞めた。辞める前に相談できる場がなかった。
+【提案】月15,000円＋相談1回5,000円の社外窓口。担当者（総務）の相談も含む。
+【手間】案内チラシを配るだけ。説明会は不要。
+【心配への答え】最初の3か月はいつでもやめられる。3か月後に、社員アンケートで続けるか判断する。
+【お願いしたい判断】12月からの試験導入の可否。
+
+※数字は架空です。実際は御社の事実だけで作ります。"""),
+ ("社内アンケート", "05_社内アンケート", "5分",
+  "相談窓口を試した3か月後に、社員に聞く3問。",
+  """Q1. 社外の相談窓口があって、よかったと思いますか
+　□ とても思う　□ 思う　□ どちらでもない　□ 思わない
+
+Q2. この窓口を、これからも残してほしいですか
+　□ ぜひ残してほしい　□ あってもよい　□ なくてもよい
+
+Q3. ひとことあれば、どうぞ（任意）
+
+※匿名です。少人数のため、部署ごとの集計はしません。"""),
+]
+
+def _mihon_card(t, tool, mins, lead, body):
+    b = body.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+    return (f'<div class="card mcard"><h3>{t}</h3><p class="small">{lead}<br>使った指示書：{tool.split('_',1)[0]}番（{tool.split('_',1)[1]}）　かかった時間の目安：{mins}</p>'
+            f'<div class="mihon">{b}</div></div>')
+
+MIHON = (head("AIで作れるものの見本｜一人人事のための道具箱", "AIが苦手な人事・研修担当の方と、画面を共有しながら一緒に作ります。社員向けの案内、求人票、やさしい日本語、1on1の準備など、架空の会社で作った見本です。") + bar("mihon.html") +
+ '<header class="hero"><div class="wrap" style="display:block"><p class="tag">AIで作れるもの</p><h1>こんなものが、30分で一緒に作れます</h1>'
+ '<p class="lead">AIが苦手でも大丈夫です。画面を共有しながら、質問に答えていただくだけで、下書きができあがります。下は、架空の会社（食品の製造・35名）で実際にAIで作った見本です。</p></div></header>'
+ '<section><div class="wrap"><h2>一緒に作る、3つの段階</h2><ol class="steps">'
+ '<li><span><b>一緒に作る</b><br>画面を共有しながら、AIの質問に答えていただきます。その場で下書きができあがります。</span></li>'
+ '<li><span><b>使い方を覚える</b><br>月2回の相談の中で、ご自身の手で動かしてみます。分からないことはチャットでいつでも。</span></li>'
+ '<li><span><b>自分で回す</b><br>御社用に整えた「指示書」一式をお渡しします。次からは、AIに貼るだけで作れます。</span></li></ol></div></section>'
+ '<section class="band"><div class="wrap"><h2>見本</h2><p class="sub">実際には、御社の情報で作ります。AIの下書きは、必ず人が読んで確かめてから使います。社員の名前など、個人が分かる情報はAIに入力しません。</p>'
+ '<div class="grid g2">' + "".join(_mihon_card(*x) for x in MIHON_ITEMS) + '</div></div></section>'
+ '<section><div class="wrap"><h2>ほかにも、作れるもの</h2><ul class="worry">'
+ '<li>研修の進行表とスライドの骨子</li><li>面談の記録シート</li><li>社員向けのよくある質問集（就業規則をもとに）</li><li>月に1度の社内のお便り</li></ul>'
+ '<p class="small" style="margin-top:12px">「こういうものがあったら」というご要望から、一緒に新しく作ることもできます。</p>'
+ f'<div class="cta"><a class="btn" href="{FORM_SHIRYO}">まずは話を聞いてみる（30分・無料）</a><a class="btn sub" href="index.html">サービスの全体を見る</a></div></div></section>' + FOOT)
+
 def more_pages():
     out = {n["file"]: nayami_page(n) for n in NAYAMI}
-    out.update({"shindan.html": SHINDAN, "mitsumori.html": MITSUMORI, "unei.html": UNEI, "sharoushi.html": SHAROUSHI})
+    out.update({"shindan.html": SHINDAN, "mitsumori.html": MITSUMORI, "unei.html": UNEI, "sharoushi.html": SHAROUSHI, "mihon.html": MIHON})
     return out
 
 
