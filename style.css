@@ -1,4 +1,5 @@
 
+.career{margin:10px 0 12px;padding-left:1.2em;line-height:1.8}.career li{margin:4px 0}.yosu{margin:12px 0 0}.prof .yosu img{border-radius:12px;width:180px;height:auto;border:0;box-shadow:none}.yosu figcaption{font-size:13px;color:#667}
 .grid.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))}
 .mihon{background:#fff;border:1px solid #e6e1d8;border-radius:12px;padding:14px 16px;white-space:pre-wrap;font-size:14px;line-height:1.85;margin-top:10px}.mcard .small{margin:4px 0 0}
 .vid{position:relative;max-width:760px;aspect-ratio:16/9;margin-top:16px;border-radius:16px;overflow:hidden;background:#000}.vid iframe,.vid video{position:absolute;inset:0;width:100%;height:100%;border:0}

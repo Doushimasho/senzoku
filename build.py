@@ -6,8 +6,9 @@ OUT = sys.argv[1] if len(sys.argv) > 1 else "site"
 NAME = "竹村正太"
 YAGO = ""        # 屋号（決まったら入れる。空なら表示しない）
 REG_NO = ""      # キャリアコンサルタント登録番号（空なら表示しない）
-VIDEO_WELCOME = ""  # 挨拶動画。YouTubeの動画ID（例：dQw4w9WgXcQ）か、同じ場所に置いたmp4のファイル名。空なら表示しない
+VIDEO_WELCOME = "aisatsu.mp4"  # 挨拶動画。YouTubeの動画ID（例：dQw4w9WgXcQ）か、同じ場所に置いたmp4のファイル名。空なら表示しない
 VIDEO_SAMPLE = ""   # 面談の雰囲気の動画（同上）
+VIDEO_SHOKAI = "shokai.mp4"  # サービス紹介動画（同上）
 CF_TOKEN = "f3ce115577a342c1b827ba55d74a7642"    # Cloudflare Web Analyticsのトークン。空なら計測タグを入れない
 GC_CODE = ""     # GoatCounterを使う場合のコード（無料版は非商用向けのため、基本はCloudflareを使う）
 SITE = "https://doushimasho.github.io/senzoku/"
@@ -111,6 +112,7 @@ PAGES = [
 ]
 
 CSS = """
+.career{margin:10px 0 12px;padding-left:1.2em;line-height:1.8}.career li{margin:4px 0}.yosu{margin:12px 0 0}.prof .yosu img{border-radius:12px;width:180px;height:auto;border:0;box-shadow:none}.yosu figcaption{font-size:13px;color:#667}
 .grid.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))}
 .mihon{background:#fff;border:1px solid #e6e1d8;border-radius:12px;padding:14px 16px;white-space:pre-wrap;font-size:14px;line-height:1.85;margin-top:10px}.mcard .small{margin:4px 0 0}
 .vid{position:relative;max-width:760px;aspect-ratio:16/9;margin-top:16px;border-radius:16px;overflow:hidden;background:#000}.vid iframe,.vid video{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -183,19 +185,25 @@ def video(src, title):
     if not src:
         return ""
     if src.endswith(".mp4"):
-        inner = f'<video controls preload="metadata" playsinline src="{src}" title="{title}"></video>'
+        poster = src[:-4] + ".jpg"
+        inner = f'<video controls preload="none" playsinline poster="{poster}" src="{src}" title="{title}"></video>'
     else:
         inner = f'<iframe src="https://www.youtube-nocookie.com/embed/{src}" title="{title}" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>'
     return f'<div class="vid">{inner}</div>'
 def welcome():
     if not VIDEO_WELCOME:
         return ""
-    return ('<section><div class="wrap"><h2>はじめまして、竹村です</h2><p class="sub">1分ほどの動画で、ごあいさつします。</p>'
+    return ('<section><div class="wrap"><h2>はじめまして、竹村です</h2><p class="sub">40秒ほどの動画で、ごあいさつします（音声つき・字幕あり）。</p>'
             + video(VIDEO_WELCOME, "竹村正太のごあいさつ") + '</div></section>')
+def shokai():
+    if not VIDEO_SHOKAI:
+        return ""
+    return ('<section><div class="wrap"><h2>1分でわかる、このサービス</h2><p class="sub">仕組み、安心の約束、料金までを1分にまとめました（音声つき・字幕あり）。</p>'
+            + video(VIDEO_SHOKAI, "サービス紹介") + '</div></section>')
 def sample():
     if not VIDEO_SAMPLE:
-        return ""
-    return ('<section class="band"><div class="wrap"><h2>30分の相談は、こんな雰囲気です</h2><p class="sub">再現した様子です。実際の相談の録画ではありません。</p>'
+        return shokai()
+    return shokai() + ('<section class="band"><div class="wrap"><h2>30分の相談は、こんな雰囲気です</h2><p class="sub">再現した様子です。実際の相談の録画ではありません。</p>'
             + video(VIDEO_SAMPLE, "相談の雰囲気") + '</div></section>')
 
 def bar(cur):
@@ -252,7 +260,7 @@ SHARED = f"""
 <details><summary>社員から転職や退職の相談があったら、どうしますか。</summary><p>そうした相談も受けます。引き止めも転職の勧めもせず、ご本人が納得して選べるよう整理を手伝います。相談の内容は、本人の同意なく会社に伝えません。</p></details>
 <details><summary>ハラスメントの相談を受けたら、どうしますか。</summary><p>この窓口は、会社が設けるハラスメントの相談窓口の代わりにはなりません。会社の正式な窓口と社外の公的な相談先をご案内し、ご本人が望めば、会社に伝える手伝いをします。</p></details>
 <details><summary>チャットでの相談は、誰が使えますか。</summary><p>窓口担当の方（人事・研修担当・管理職など、導入時に決めた方）です。社員の方の相談は、秘密を守るため、予約した面談で伺います。チャットに社員の名前や個人的な事情は書かないでください。</p></details>
-<details><summary>外国籍の社員も相談できますか。</summary><p>できます。やさしい日本語と、簡単な英語で対応します（英語は日常会話の水準です）。仕事のこと、日本での働き方や暮らしとの両立など、言葉にしにくいことも、ゆっくり伺います。</p></details>
+<details><summary>外国籍の社員も相談できますか。</summary><p>できます。ハローワークでは外国籍の方の職業相談も担当してきました。やさしい日本語と、簡単な英語で対応します（英語は日常会話の水準です）。仕事のこと、日本での働き方や暮らしとの両立など、言葉にしにくいことも、ゆっくり伺います。</p></details>
 <details><summary>新人研修などに組み込めますか。</summary><p>できます。新人研修、3年目研修、管理職への昇格、会社の取り組みなどに合わせて、対象者と回数を決めて面談を組み込みます。料金は通常と同じです。</p></details>
 <details><summary>利用が少なかったら、もったいなくありませんか。</summary><p>相談の費用は使った分だけです。月2回の担当者相談は、窓口担当の方ご自身の相談に使えます。導入から1か月たったころと、利用が少ない月には、社員の方への再案内文をこちらで用意します。</p></details>
 <details><summary>知り合いの会社を紹介すると、特典はありますか。</summary><p>あります。紹介した会社が契約に至ると、紹介した会社とされた会社の両方の基本料を1か月分無料にします。年払いの会社には、代わりに相談3回分（15,000円分）を無料にします。紹介は、窓口担当の方から一言お知らせいただくだけで結構です。</p></details>
@@ -263,7 +271,7 @@ SHARED = f"""
 <details><summary>担当が不在のときはどうなりますか。</summary><p>病気や事故などで1か月を通じて実施できなかった場合、その月の基本料はいただきません。2か月以上続けて実施できない場合は、会社はいつでも解約できます。</p></details>
 <details><summary>産業医や既存の相談窓口と重なりませんか。</summary><p>こちらは仕事とキャリアの相談、前向きなコーチングを扱います。不調が疑われる場合は、産業医や医療機関につなぎます。</p></details>
 </div></div></section>
-<section><div class="wrap"><h2>担当者</h2><div class="prof"><img src="takemura.jpg" alt="{NAME}の写真" width="260" height="290"><div><p class="pn">{NAME}<span>たけむら しょうた</span></p><p>国家資格キャリアコンサルタント。キャリア相談、不登校の若者支援に携わってきました。ビジネスコーチングとスポーツのコーチングも、いまも仕事として続けています。</p><p>相談する方の話を聴くことと、相談を受ける方を支えることの両方を仕事にしています。御社の専属として、毎回同じ担当者がお話を伺います（ほかの会社も担当しています）。</p><p><a href="unei.html">運営者情報を見る</a></p></div></div></div></section>
+<section><div class="wrap"><h2>担当者</h2><div class="prof"><img src="takemura.jpg" alt="{NAME}の写真" width="260" height="290"><div><p class="pn">{NAME}<span>たけむら しょうた</span></p><p>国家資格キャリアコンサルタント。ビジネスコーチングとスポーツのコーチングを、いまも仕事として続けています。</p><ul class="career"><li>ハローワークで4年間、職業相談を担当。高齢の方、障害のある方、外国籍の方を含め、年2,000件以上の相談を受けてきました。</li><li>ビジネスコーチング（2年目）。大人の学び直しや、個人で事業をする方の相談、モチベーションの支援。</li><li>小学生を中心としたバスケットボールの指導に10年以上。一人ひとりの特性とやる気に合わせた指導。</li><li>オンラインのフリースクールで、不登校の子どもと家族の相談、運営の相談。</li><li>JICAボランティアとして、大学卒業後に南アフリカで2年間活動。現地の農業省で農村の発展に取り組みました。</li></ul><p>相談する方の話を聴くことと、相談を受ける方を支えることの両方を仕事にしています。御社の専属として、毎回同じ担当者がお話を伺います（ほかの会社も担当しています）。</p><figure class="yosu"><img src="sodan-yosu.jpg" alt="オンライン相談のときの竹村正太" width="180" height="209"><figcaption>オンライン相談のときの様子</figcaption></figure><p><a href="unei.html">運営者情報を見る</a></p></div></div></div></section>
 @@JUNBI@@
 """
 
