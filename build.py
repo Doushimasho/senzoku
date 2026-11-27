@@ -213,6 +213,21 @@ def bar(cur):
 
 FOOT = f'<footer><div class="wrap">担当：{NAME}（国家資格キャリアコンサルタント）　<a href="unei.html">運営者情報・個人情報の取り扱い</a></div></footer></body></html>'
 
+
+# ---- 新しいデザイン（design.py）に切り替える ----
+import design
+CSS = design.CSS
+_old_head = head
+def head(title, desc):
+    h = _old_head(title, desc)
+    return h.replace("family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700", "family=Zen+Maru+Gothic:wght@700;900")
+def bar(cur):
+    return design.header(cur, FORM_SHIRYO)
+FOOT = design.footer(FORM_SHIRYO)
+def hero_svg(c1, c2):
+    return ('<div class="person"><img src="takemura.jpg" alt="担当の竹村正太の写真" width="420" height="462">'
+            '<div class="namecard"><small>担当</small><b>竹村 正太</b><small>国家資格キャリアコンサルタント</small></div></div>')
+
 SHARED = f"""
 <section><div class="wrap"><h2>使い方</h2><p class="sub">プランは1つです。使い方は会社ごとに決められます。</p>
 <div class="grid">{''.join(f'<div class="card"><h3>{t}</h3><p>{d}</p><p class="who">{w}</p></div>' for t, d, w in USAGE)}</div></div></section>
@@ -271,7 +286,7 @@ SHARED = f"""
 <details><summary>担当が不在のときはどうなりますか。</summary><p>病気や事故などで1か月を通じて実施できなかった場合、その月の基本料はいただきません。2か月以上続けて実施できない場合は、会社はいつでも解約できます。</p></details>
 <details><summary>産業医や既存の相談窓口と重なりませんか。</summary><p>こちらは仕事とキャリアの相談、前向きなコーチングを扱います。不調が疑われる場合は、産業医や医療機関につなぎます。</p></details>
 </div></div></section>
-<section><div class="wrap"><h2>担当者</h2><div class="prof"><img src="takemura.jpg" alt="{NAME}の写真" width="260" height="290"><div><p class="pn">{NAME}<span>たけむら しょうた</span></p><p>国家資格キャリアコンサルタント。ビジネスコーチングとスポーツのコーチングを、いまも仕事として続けています。</p><ul class="career"><li>ハローワークで4年間、職業相談を担当。高齢の方、障害のある方、外国籍の方を含め、年2,000件以上の相談を受けてきました。</li><li>ビジネスコーチング（2年目）。大人の学び直しや、個人で事業をする方の相談、モチベーションの支援。</li><li>小学生を中心としたバスケットボールの指導に10年以上。一人ひとりの特性とやる気に合わせた指導。</li><li>オンラインのフリースクールで、不登校の子どもと家族の相談、運営の相談。</li><li>JICAボランティアとして、大学卒業後に南アフリカで2年間活動。現地の農業省で農村の発展に取り組みました。</li></ul><p>相談する方の話を聴くことと、相談を受ける方を支えることの両方を仕事にしています。御社の専属として、毎回同じ担当者がお話を伺います（ほかの会社も担当しています）。</p><figure class="yosu"><img src="sodan-yosu.jpg" alt="オンライン相談のときの竹村正太" width="180" height="209"><figcaption>オンライン相談のときの様子</figcaption></figure><p><a href="unei.html">運営者情報を見る</a></p></div></div></div></section>
+<section><div class="wrap"><h2>担当者</h2><div class="prof"><img src="takemura.jpg" alt="{NAME}の写真" width="260" height="290"><div><p class="pn">{NAME}<span>たけむら しょうた</span></p><p>国家資格キャリアコンサルタント。ビジネスコーチングとスポーツのコーチングを、いまも仕事として続けています。</p><ul class="career"><li>ハローワークで4年間、職業相談を担当。年2,000件以上の相談を受けてきました。</li><li>ビジネスコーチング。大人の学び直しや、個人で事業をする方の相談、目標づくりとモチベーションの支援。</li><li>小学生を中心としたバスケットボールの指導に10年以上。一人ひとりの特性とやる気に合わせた指導。</li><li>オンラインのフリースクールで、不登校の子どもと家族の相談、運営の相談。</li><li>JICAボランティアとして、大学卒業後に南アフリカで2年間活動。現地の農業省で農村の発展に取り組みました。</li></ul><p>相談する方の話を聴くことと、相談を受ける方を支えることの両方を仕事にしています。御社の専属として、毎回同じ担当者がお話を伺います（ほかの会社も担当しています）。</p><figure class="yosu"><img src="sodan-yosu.jpg" alt="オンライン相談のときの竹村正太" width="180" height="209"><figcaption>オンライン相談のときの様子</figcaption></figure><p><a href="unei.html">運営者情報を見る</a></p></div></div></div></section>
 @@JUNBI@@
 """
 
@@ -410,7 +425,7 @@ NAYAMI = [
       secs=[("何が変わるのか", "これまで努力義務だった50人未満の事業場でも、ストレスチェックの実施が必要になります。施行の時期や実施の方法は、厚生労働省の最新の案内をご確認ください。"),
             ("検査だけでは足りないこと", "検査は年に1度の確認です。日々の小さな気がかりを、不調になる前に話せる場所は、別に必要です。歯の治療と毎日の歯みがきが別であるのと同じです。"),
             ("この制度での使い方", "この窓口はストレスチェックの実施者ではなく、医療機関でもありません。仕事とキャリアの相談を、ふだんから受ける役割です。不調が疑われるときは、産業医や医療機関につなぎます。")]),
- dict(file="coaching-kaisha-futan.html", nav="コーチングを会社負担で受けたい", to="hataraku.html", tolabel="働くあなたへ",
+ dict(file="coaching-kaisha-futan.html", nav="コーチングを会社負担で受けたい", to="hataraku.html", tolabel="会社で働く方へ",
       desc="コーチングやキャリア相談を、自己負担なしで受ける方法。会社に制度として導入してもらうための提案の進め方。",
       h1="コーチングを、会社の制度として受ける。",
       lead="もっと力を出したい。これからのキャリアを整理したい。その費用を自分で払い続けるのは大変です。会社の制度になれば、自己負担なしで使えます。",
@@ -685,11 +700,23 @@ MIHON = (head("AIで作れるものの見本｜一人人事のための道具箱
  '<p class="small" style="margin-top:12px">「こういうものがあったら」というご要望から、一緒に新しく作ることもできます。</p>'
  f'<div class="cta"><a class="btn" href="{FORM_SHIRYO}">まずは話を聞いてみる（30分・無料）</a><a class="btn sub" href="index.html">サービスの全体を見る</a></div></div></section>' + FOOT)
 
+MIHON = design.mihon_page(MIHON_ITEMS, head("AIで作れるものの見本｜人事・総務の文書づくりを画面を見ながら一緒に", "AIが苦手な人事・総務の方と、画面を共有しながら一緒に作ります。社員向けの案内、求人票、やさしい日本語、1on1の準備など、架空の会社で作った8つの見本。スライド・動画・Webページの制作も。"), FORM_SHIRYO)
+SHAROUSHI = design.sharoushi_page(head("社会保険労務士の先生へ｜顧問先の社員面談をお手伝いします", "顧問先の社員のキャリア相談・面談を、国家資格キャリアコンサルタントがオンラインで引き受けます。手続きと制度は先生に、面談は担当者に。紹介料なし、紹介先は基本料1か月無料。"), FORM_SHIRYO)
+
 def more_pages():
     out = {n["file"]: nayami_page(n) for n in NAYAMI}
     out.update({"shindan.html": SHINDAN, "mitsumori.html": MITSUMORI, "unei.html": UNEI, "sharoushi.html": SHAROUSHI, "mihon.html": MIHON})
     return out
 
+
+def page(p):
+    if p["file"] == "index.html":
+        return design.top_page(head("社外の専属キャリアコンサルタント｜社員の相談窓口を、月15,000円から｜竹村正太",
+            "国家資格キャリアコンサルタントが御社の専属になり、社員の相談と、相談を受ける人事・管理職の相談の両方を受けます。AIを使った資料づくりも一緒に。月額15,000円、相談1回30分5,000円。最初の3か月は解約自由。"), FORM_SHIRYO)
+    a = design.AUD[p["file"]]
+    return design.aud_page(p["file"], head(a["title"], a["desc"]), FORMS)
+def nayami_page(n):
+    return design.nayami_page3(n, head(n["nav"] + "｜社外の専属キャリアコンサルタント", n["desc"]), FORM_SHIRYO)
 
 os.makedirs(OUT, exist_ok=True)
 files = {p["file"]: page(p) for p in PAGES}
